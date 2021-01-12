@@ -15,6 +15,10 @@ func TestPortalNews_Do(t *testing.T) {
 			name: 	"Scrape naver news",
 			p: 	&PortalNews {
 					Scrape {
+						VisitDomains: []string {
+							"https://news.naver.com/",
+							// "https://news.daum.net/",
+						},
 						AllowedDomains: []string {
 							"news.naver.com",
 							"news.naver.com/main",
