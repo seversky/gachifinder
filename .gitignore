@@ -1,13 +1,8 @@
 # Directories
 
-
 # Binaries for programs and plugins
 cmd/gachifinder/gachifinder
 *.exe
-*.exe~
-*.dll
-*.so
-*.dylib
 go.sum
 
 # Test binary, built with `go test -c`
