@@ -1,0 +1,35 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "go.toolsEnvVars": {
+      "GO111MODULE": "on"
+    },
+    "editor.renderControlCharacters": true,
+    "editor.largeFileOptimizations": false,
+    "editor.formatOnSave": true,
+    "editor.renderWhitespace": "none",
+    "editor.wordWrap": "on",
+    "files.eol": "\n",
+    "go.lintTool": "golint",
+    "go.lintOnSave": "package",
+    "go.buildOnSave": "package",
+    "go.formatTool": "goimports",
+    "go.autocompleteUnimportedPackages": true,
+    "go.enableCodeLens": {
+      "references": false,
+      "runtest": true
+    },
+    "go.testTimeout": "5m",
+    "prettier.singleQuote": true,
+    "prettier.bracketSpacing": false,
+    "prettier.semi": false,
+    "prettier.trailingComma": "es5",
+    "prettier.arrowParens": "avoid",
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "diffEditor.ignoreTrimWhitespace": false
+  }
+}
