@@ -1,17 +1,21 @@
 package gachifinder
 
+import (
+	"time"
+)
+
 // ParsingHandler ...
-type ParsingHandler func()
+type ParsingHandler func([]GachiData)
 
 // Scraper interface is a crawling actor.
 type Scraper interface {
-	Do(f ParsingHandler)
-	ParsingHandler()
+	Do(ParsingHandler, []GachiData)
+	ParsingHandler([]GachiData)
 }
 
 // Emitter interface to sent or write the data to the targets.
 type Emitter interface {
-	// Connect to the Emitter; connect is only called once when the plugin starts
+	// Connect to the Emitter; connect is only called once when the plugin starts.
 	Connect()
 	// Close any connections to the Emitter. Close is called once when the output
 	// is shutting down. Close will not be called until all writes have finished,
@@ -20,4 +24,15 @@ type Emitter interface {
 	Close()
 	// Write takes in group of points to be written to the Emitter
     Write()
+}
+
+// GachiData is contents to collect data by scraper.
+type GachiData struct {
+	Timestamp		time.Time
+	ShortCutIconURL	string
+	Title			string
+	URL				string
+	ImageURL		string
+	Creator			string
+	Description		string
 }
