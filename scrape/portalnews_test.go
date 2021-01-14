@@ -32,7 +32,8 @@ func TestPortalNews_Do(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.s = tt.p
-			tt.s.Do(tt.p.ParsingHandler)
+			collectedData := make([]gachifinder.GachiData, 10, 20)
+			tt.s.Do(tt.p.ParsingHandler, collectedData)
 		})
 	}
 }
