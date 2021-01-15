@@ -3,6 +3,7 @@ package scrape
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/gocolly/colly/v2"
 	"github.com/seversky/gachifinder"
@@ -16,7 +17,7 @@ type PortalNews struct {
 }
 
 // ParsingHandler registers to subvisit and parse the scraped HTML.
-func (p *PortalNews) ParsingHandler(cd []gachifinder.GachiData) {
+func (p *PortalNews) ParsingHandler(cd chan<- gachifinder.GachiData) {
 	if p.c == nil {
 		fmt.Println("colly.Collector is nil")
 		return
@@ -71,14 +72,20 @@ func (p *PortalNews) ParsingHandler(cd []gachifinder.GachiData) {
 
 	p.c.OnHTML("head", func(e *colly.HTMLElement) {
 		if e.Request.URL.Path == "/" {
-			return // Skip if called from the root domain "news.naver.com"
+			return // Skip if called from the root domain like "news.naver.com"
 		}
-		fmt.Println("\nshortcut icon -", e.ChildAttr("link[rel='shortcut icon']", "href"))
-		fmt.Println("url -", e.ChildAttr("meta[property='og:url']", "content"))
-		fmt.Println("image url -", e.ChildAttr("meta[name='twitter:image']", "content"))
-		fmt.Println("title -", e.ChildAttr("meta[name='twitter:title']", "content"))
-		fmt.Println("creator -", e.ChildAttr("meta[name='twitter:creator']", "content"))
-		fmt.Println("description -", e.ChildAttr("meta[name='twitter:description']", "content"))
+
+		emitData := gachifinder.GachiData{
+			Timestamp: time.Now(),
+			ShortCutIconURL: e.ChildAttr("link[rel='shortcut icon']", "href"),
+			Title: e.ChildAttr("meta[name='twitter:title']", "content"),
+			URL: e.ChildAttr("meta[property='og:url']", "content"),
+			ImageURL: e.ChildAttr("meta[name='twitter:image']", "content"),
+			Creator: e.ChildAttr("meta[name='twitter:creator']", "content"),
+			Description: e.ChildAttr("meta[name='twitter:description']", "content"),
+		}
+
+		cd <- emitData
 	})
 
 	p.c.OnError(func(r *colly.Response, err error) {

@@ -5,12 +5,12 @@ import (
 )
 
 // ParsingHandler ...
-type ParsingHandler func([]GachiData)
+type ParsingHandler func(chan<- GachiData)
 
 // Scraper interface is a crawling actor.
 type Scraper interface {
-	Do(ParsingHandler, []GachiData)
-	ParsingHandler([]GachiData)
+	Do(ParsingHandler, chan<- GachiData, chan<- bool)
+	ParsingHandler(chan<- GachiData)
 }
 
 // Emitter interface to sent or write the data to the targets.

@@ -2,6 +2,8 @@ package scrape
 
 import (
 	"testing"
+	"fmt"
+
 	"github.com/seversky/gachifinder"
 )
 
@@ -12,7 +14,7 @@ func TestPortalNews_Do(t *testing.T) {
 		s		gachifinder.Scraper
 	}{
 		{
-			name: 	"Scrape naver news",
+			name: 	"Scrape Portal news",
 			p: 	&PortalNews {
 					Scrape {
 						VisitDomains: []string {
@@ -32,8 +34,30 @@ func TestPortalNews_Do(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.s = tt.p
-			collectedData := make([]gachifinder.GachiData, 10, 20)
-			tt.s.Do(tt.p.ParsingHandler, collectedData)
+			emitData := make([]gachifinder.GachiData, 0, 20)
+
+			done := make(chan bool)
+			cd := make(chan gachifinder.GachiData)
+
+			go tt.s.Do(tt.p.ParsingHandler, cd, done)
+
+			for c := true; c;{
+				select {
+				case data := <-cd:
+					emitData = append(emitData, data)
+				case <-done:
+					c = false
+				}
+			}
+
+			if len(emitData) == 0 {
+				t.Error("There is not any collected data")
+			}
+			for _, data := range emitData {
+				fmt.Println(data.Timestamp)
+				fmt.Println(data.Title)
+				fmt.Println(data.Creator)
+			}
 		})
 	}
 }

@@ -20,7 +20,7 @@ type Scrape struct {
 }
 
 // Do creates colly.collector and queue, and then do and wait till done
-func (s *Scrape) Do(f gachifinder.ParsingHandler, cd []gachifinder.GachiData) {
+func (s *Scrape) Do(f gachifinder.ParsingHandler, cd chan<- gachifinder.GachiData, done chan<- bool) {
 	// Instantiate default collector
 	s.c = colly.NewCollector(
 		colly.UserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36"),
@@ -56,8 +56,10 @@ func (s *Scrape) Do(f gachifinder.ParsingHandler, cd []gachifinder.GachiData) {
 	q.Run(s.c)
 	// Wait for the crawling to complete.
 	s.c.Wait()
+
+	done <- true
 }
 
 // ParsingHandler is an abstract function.
 // this has to be implemented into the embedded(is-a) method.
-func (s *Scrape) ParsingHandler([]gachifinder.GachiData) {}
+func (s *Scrape) ParsingHandler(chan<- gachifinder.GachiData) {}
