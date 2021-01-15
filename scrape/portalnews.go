@@ -3,7 +3,6 @@ package scrape
 import (
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/gocolly/colly/v2"
 	"github.com/seversky/gachifinder"
@@ -76,7 +75,7 @@ func (p *PortalNews) ParsingHandler(cd chan<- gachifinder.GachiData) {
 		}
 
 		emitData := gachifinder.GachiData{
-			Timestamp: time.Now(),
+			Timestamp: p.Timestamp,
 			ShortCutIconURL: e.ChildAttr("link[rel='shortcut icon']", "href"),
 			Title: e.ChildAttr("meta[name='twitter:title']", "content"),
 			URL: e.ChildAttr("meta[property='og:url']", "content"),
