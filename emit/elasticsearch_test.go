@@ -31,6 +31,7 @@ func TestElasticsearch_Write(t *testing.T) {
 		name string
 		e    gachifinder.Emitter
 	}{
+		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
