@@ -22,7 +22,7 @@ type Elasticsearch struct {
 }
 
 // Connect to Elasticsearch & Create index.
-func (e *Elasticsearch) Connect() {
+func (e *Elasticsearch) Connect() error {
 	_, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
 	defer cancel()
 
@@ -33,7 +33,7 @@ func (e *Elasticsearch) Connect() {
 		elastic.SetGzip(true),
 		)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	// check for ES version on first node.
@@ -41,14 +41,16 @@ func (e *Elasticsearch) Connect() {
 
 	if err != nil {
 		fmt.Println("Elasticsearch version check failed:", err)
-		panic(err)
+		return err
 	}
 
 	// quit if ES version is not supported.
 	majorReleaseNumber, err := strconv.Atoi(strings.Split(esVersion, ".")[0])
-	if err != nil || majorReleaseNumber < 7 {
-		fmt.Println("Elasticsearch version not supported: " + esVersion)
-		return
+	if err != nil {
+		return err
+	}
+	if majorReleaseNumber < 7 {
+		return fmt.Errorf("Elasticsearch version not supported: %s", esVersion)
 	}
 
 	fmt.Println("I! Elasticsearch version: " + esVersion)
@@ -56,6 +58,8 @@ func (e *Elasticsearch) Connect() {
 
 	e.Client = client
 	e.MajorReleaseNumber = majorReleaseNumber
+
+	return nil
 }
 
 // Close to release Elasticsearch Client.

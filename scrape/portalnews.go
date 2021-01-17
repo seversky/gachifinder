@@ -75,7 +75,7 @@ func (p *PortalNews) ParsingHandler(cd chan<- gachifinder.GachiData) {
 		}
 
 		emitData := gachifinder.GachiData{
-			Timestamp: p.Timestamp,
+			Timestamp: p.timestamp,
 			ShortCutIconURL: e.ChildAttr("link[rel='shortcut icon']", "href"),
 			Title: e.ChildAttr("meta[name='twitter:title']", "content"),
 			URL: e.ChildAttr("meta[property='og:url']", "content"),

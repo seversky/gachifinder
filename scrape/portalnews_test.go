@@ -14,7 +14,7 @@ func TestPortalNews_Do(t *testing.T) {
 		s		gachifinder.Scraper
 	}{
 		{
-			name: 	"Scrape Portal news",
+			name: 	"Scrape Test for Portal News",
 			p: 	&PortalNews {
 					Scrape {
 						VisitDomains: []string {
@@ -31,6 +31,7 @@ func TestPortalNews_Do(t *testing.T) {
 				},
 		},
 	}
+	
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.s = tt.p
@@ -58,8 +59,12 @@ func TestPortalNews_Do(t *testing.T) {
 			fmt.Println(length)
 			for _, data := range emitData {
 				fmt.Println(data.Timestamp)
-				fmt.Println(data.Title)
 				fmt.Println(data.Creator)
+				fmt.Println(data.Title)
+				fmt.Println(data.Description)
+				fmt.Println(data.URL)
+				fmt.Println(data.ShortCutIconURL)
+				fmt.Println(data.ImageURL)
 			}
 		})
 	}

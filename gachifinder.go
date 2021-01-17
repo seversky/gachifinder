@@ -16,7 +16,7 @@ type Scraper interface {
 // Emitter interface to sent or write the data to the targets.
 type Emitter interface {
 	// Connect to the Emitter; connect is only called once when the plugin starts.
-	Connect()
+	Connect() error
 	// Close any connections to the Emitter. Close is called once when the output
 	// is shutting down. Close will not be called until all writes have finished,
 	// and Write() will not be called once Close() has been, so locking is not

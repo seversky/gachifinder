@@ -48,8 +48,12 @@ func main() {
 			fmt.Println(length)
 			for _, data := range emitData {
 				fmt.Println(data.Timestamp)
-				fmt.Println(data.Title)
 				fmt.Println(data.Creator)
+				fmt.Println(data.Title)
+				fmt.Println(data.Description)
+				fmt.Println(data.URL)
+				fmt.Println(data.ShortCutIconURL)
+				fmt.Println(data.ImageURL)
 			}
 		} else {
 			fmt.Println("There is not any collected data")
