@@ -9,7 +9,7 @@ services:
     environment:
       - discovery.type=single-node
       - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
       - TZ=Asia/Seoul
       - LANG=ko_KR.UTF-8
       - LANGUAGE=ko_KR.UTF-8
@@ -19,6 +19,7 @@ services:
         hard: -1
     volumes:
       - esdata:/usr/share/elasticsearch/data
+      - ./elasticsearch/userdict_ko.txt:/usr/share/elasticsearch/config/userdict_ko.txt
     ports:
       - 9200:9200
       - 9300:9300
@@ -33,9 +34,8 @@ services:
     ports:
       - 5601:5601
     environment:
-      ELASTICSERCH_UTL: http://elasticsearch:9200
-      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
-    environment:
+      - ELASTICSERCH_UTL=http://elasticsearch:9200
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
       - TZ=Asia/Seoul
     #restart: always
     privileged: true
