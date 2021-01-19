@@ -28,10 +28,7 @@ func main() {
 	// This is the temporary routine run every 5 minutes.
 	// To do: I'll apply one of some scheduler modules. eg, github.com/go-co-op/gocron.
 	for {
-		done := make(chan bool)
-		cd := make(chan gachifinder.GachiData)
-
-		go p.Do(p.ParsingHandler, cd, done)
+		cd, done := p.Do(p.ParsingHandler)
 
 		emitData := make([]gachifinder.GachiData, 0, 20)
 		for c := true; c;{

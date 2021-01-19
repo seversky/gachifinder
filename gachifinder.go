@@ -9,7 +9,7 @@ type ParsingHandler func(chan<- GachiData)
 
 // Scraper interface is a crawling actor.
 type Scraper interface {
-	Do(ParsingHandler, chan<- GachiData, chan<- bool)
+	Do(ParsingHandler) (<-chan GachiData, <-chan bool)
 	ParsingHandler(chan<- GachiData)
 }
 

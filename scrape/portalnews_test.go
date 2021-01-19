@@ -35,12 +35,7 @@ func TestPortalNews_Do(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.s = tt.p
-
-			done := make(chan bool)
-			cd := make(chan gachifinder.GachiData)
-
-			go tt.s.Do(tt.p.ParsingHandler, cd, done)
-
+			cd, done := tt.s.Do(tt.p.ParsingHandler)
 			emitData := make([]gachifinder.GachiData, 0, 20)
 			for c := true; c;{
 				select {
@@ -56,7 +51,7 @@ func TestPortalNews_Do(t *testing.T) {
 				t.Error("There is not any collected data")
 			}
 
-			fmt.Println(length)
+			fmt.Println("The number of the collected data:", length)
 			for _, data := range emitData {
 				fmt.Println(data.Timestamp)
 				fmt.Println(data.Creator)
