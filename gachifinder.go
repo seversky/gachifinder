@@ -23,16 +23,16 @@ type Emitter interface {
 	// necessary.
 	Close()
 	// Write takes in group of points to be written to the Emitter
-    Write()
+	Write(<-chan GachiData, <-chan bool) error
 }
 
 // GachiData is contents to collect data by scraper.
 type GachiData struct {
 	Timestamp		time.Time
-	ShortCutIconURL	string
-	Title			string
-	URL				string
-	ImageURL		string
 	Creator			string
+	Title			string
 	Description		string
+	URL				string
+	ShortCutIconURL	string
+	ImageURL		string
 }

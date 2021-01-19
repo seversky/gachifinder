@@ -17,12 +17,15 @@ type Scrape struct {
 	AllowedDomains	[]string
 
 	// Unexported ...
-	c 				*colly.Collector	// Will be assigned by inside Do func.
-	timestamp		time.Time
+	c 			*colly.Collector	// Will be assigned by inside Do func.
+	timestamp 	time.Time
 }
 
 // Do creates colly.collector and queue, and then do and wait till done
 func (s *Scrape) Do(f gachifinder.ParsingHandler, cd chan<- gachifinder.GachiData, done chan<- bool) {
+	defer close(cd)
+	defer close(done)
+
 	// Instantiate default collector
 	s.c = colly.NewCollector(
 		colly.UserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36"),
