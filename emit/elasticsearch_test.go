@@ -47,11 +47,11 @@ func TestElasticsearch_Write(t *testing.T) {
 		}
 		defer test.e.Close()
 
-		cd, done := func () (<-chan gachifinder.GachiData, <-chan bool) {
-			done := make(chan bool)
+		// The closure pattern of the same with Scraper Do producer.
+		cd := func () (<-chan gachifinder.GachiData) {
 			cd := make(chan gachifinder.GachiData)
 			timestamp := time.Now()
-	
+
 			go func() {
 				emitData := []gachifinder.GachiData{
 					{
@@ -73,24 +73,19 @@ func TestElasticsearch_Write(t *testing.T) {
 						Description: "18일 문재인 대통령이 신년 기자회견에서 입양에 대해 한 발언이 파문을 일으켰다. 발단은 양부모의 학대로 입양아가 사망한 ‘정인이 사건’에 대한 질문이었다. 문 대통령은 사건의 재발 방지 대책을 설명하던 중 “입양",
 					},
 				}
-	
+
 				for _, data := range emitData {
 					cd <- data
 				}
-				done <- true
 				close(cd)
-				close(done)
 			}()
 
-			return cd, done
+			return cd
 		}()
 
-		test.e.Write(cd, done)
-
-		
+		err = test.e.Write(cd)
+		if err != nil {
+			t.Error(err)
+		}
 	})
-}
-
-func TestElasticsearch_ManualDelete(t *testing.T) {
-
 }

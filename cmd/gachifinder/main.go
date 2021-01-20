@@ -7,7 +7,10 @@ import (
 
 	"github.com/seversky/gachifinder"
 	"github.com/seversky/gachifinder/scrape"
+	"github.com/seversky/gachifinder/emit"
 )
+
+const esURL = "http://192.168.56.105:9200"
 
 func main() {
 	runtime.GOMAXPROCS(1)
@@ -25,37 +28,31 @@ func main() {
 		"news.v.daum.net/v",
 	}
 
-	// This is the temporary routine run every 5 minutes.
+	var s gachifinder.Scraper = &p
+
+	e := &emit.Elasticsearch {
+		URLs: []string{esURL},
+	}
+
+	var em gachifinder.Emitter = e
+
+	err := em.Connect()
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer em.Close()
+
+	// This is the temporary routine run around every 5 minutes.
 	// To do: I'll apply one of some scheduler modules. eg, github.com/go-co-op/gocron.
 	for {
-		cd, done := p.Do(p.ParsingHandler)
+		cd := s.Do(s.ParsingHandler)
 
-		emitData := make([]gachifinder.GachiData, 0, 20)
-		for c := true; c;{
-			select {
-			case data := <-cd:
-				emitData = append(emitData, data)
-			case <-done:
-				c = false
-			}
+		err = em.Write(cd)
+		if err != nil {
+			fmt.Println(err)
 		}
 
-		length := len(emitData)
-		if length > 0 {
-			fmt.Println(length)
-			for _, data := range emitData {
-				fmt.Println(data.Timestamp)
-				fmt.Println(data.Creator)
-				fmt.Println(data.Title)
-				fmt.Println(data.Description)
-				fmt.Println(data.URL)
-				fmt.Println(data.ShortCutIconURL)
-				fmt.Println(data.ImageURL)
-			}
-		} else {
-			fmt.Println("There is not any collected data")
-		}
-
-		time.Sleep(5 * time.Minute)
+		fmt.Println("I! Crawling success", time.Now())
+		time.Sleep(4 * time.Minute)
 	}
 }

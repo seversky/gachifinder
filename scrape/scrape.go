@@ -22,8 +22,7 @@ type Scrape struct {
 }
 
 // Do creates colly.collector and queue, and then do and wait till done
-func (s *Scrape) Do(f gachifinder.ParsingHandler) (<-chan gachifinder.GachiData, <-chan bool) {
-	done := make(chan bool)
+func (s *Scrape) Do(f gachifinder.ParsingHandler) (<-chan gachifinder.GachiData) {
 	cd := make(chan gachifinder.GachiData)
 
 	go func () {
@@ -64,13 +63,10 @@ func (s *Scrape) Do(f gachifinder.ParsingHandler) (<-chan gachifinder.GachiData,
 		// Wait for the crawling to complete.
 		s.c.Wait()
 
-		done <- true
-		
 		close(cd)
-		close(done)
 	}()
 
-	return cd, done
+	return cd
 }
 
 // ParsingHandler is an abstract function.

@@ -9,7 +9,8 @@ type ParsingHandler func(chan<- GachiData)
 
 // Scraper interface is a crawling actor.
 type Scraper interface {
-	Do(ParsingHandler) (<-chan GachiData, <-chan bool)
+	// Do is a producer in a part of a pipeline
+	Do(ParsingHandler) (<-chan GachiData)
 	ParsingHandler(chan<- GachiData)
 }
 
@@ -22,8 +23,9 @@ type Emitter interface {
 	// and Write() will not be called once Close() has been, so locking is not
 	// necessary.
 	Close()
-	// Write takes in group of points to be written to the Emitter
-	Write(<-chan GachiData, <-chan bool) error
+	// Write takes in group of points to be written to the Emitter.
+	// this is a consumer in a part of a pipeline.
+	Write(<-chan GachiData) error
 }
 
 // GachiData is contents to collect data by scraper.

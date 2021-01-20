@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"context"
 	"strings"
+	"sync"
 
 	"github.com/olivere/elastic/v7"
 	"github.com/seversky/gachifinder"
@@ -100,11 +101,11 @@ var _ gachifinder.Emitter = &Elasticsearch{}
 
 // Elasticsearch struct
 type Elasticsearch struct {
-	MajorReleaseNumber  int
 	URLs                []string
 
 	// Unexported ...
 	client *elastic.Client
+	majorReleaseNumber  int
 }
 
 // Connect to Elasticsearch & Create index.
@@ -143,7 +144,7 @@ func (e *Elasticsearch) Connect() error {
 	fmt.Println("I! Elasticsearch major version number:", majorReleaseNumber)
 
 	e.client = client
-	e.MajorReleaseNumber = majorReleaseNumber
+	e.majorReleaseNumber = majorReleaseNumber
 
 	err = e.manageTemplate(ctx)
 	if err != nil {
@@ -159,8 +160,44 @@ func (e *Elasticsearch) Close() {
 }
 
 // Write the data into the Elasticsearch.
-func (e *Elasticsearch) Write(cd <-chan gachifinder.GachiData, done <-chan bool) error {
-	// bulkRequest := e.client.Bulk()
+func (e *Elasticsearch) Write(cd <-chan gachifinder.GachiData) error {
+	var wg sync.WaitGroup
+	bulkRequest := e.client.Bulk()
+
+	wg.Add(1)
+	go func () {
+		for data := range cd {
+			m := make(map[string]interface{})
+			m["@timestamp"] 	= data.Timestamp.Unix()
+			m["creator"] 		= data.Creator
+			m["title"] 			= data.Title
+			m["description"] 	= data.Description
+			m["url"] 			= data.URL
+			m["short_icon_url"]	= data.ShortCutIconURL
+			m["image_url"] 		= data.ImageURL
+
+			br := elastic.NewBulkIndexRequest().Index("gachifinder").Doc(m)
+			bulkRequest.Add(br)
+		}
+		wg.Done()
+	}()
+	wg.Wait()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
+	defer cancel()
+
+	res, err := bulkRequest.Do(ctx)
+
+	if err != nil {
+		return fmt.Errorf("Error sending bulk request to Elasticsearch: %s", err)
+	}
+
+	if res.Errors {
+		for id, err := range res.Failed() {
+			fmt.Printf("E! Elasticsearch indexing failure, id: %d, error: %s, caused by: %s, %s", id, err.Error.Reason, err.Error.CausedBy["reason"], err.Error.CausedBy["type"])
+		}
+		return fmt.Errorf("W! Elasticsearch failed to index %d metrics", len(res.Failed()))
+	}
 
 	return nil
 }
