@@ -1,9 +1,5 @@
 package gachifinder
 
-import (
-	"time"
-)
-
 // ParsingHandler ...
 type ParsingHandler func(chan<- GachiData)
 
@@ -30,7 +26,7 @@ type Emitter interface {
 
 // GachiData is contents to collect data by scraper.
 type GachiData struct {
-	Timestamp		time.Time
+	Timestamp		string
 	Creator			string
 	Title			string
 	Description		string

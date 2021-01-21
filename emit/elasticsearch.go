@@ -28,7 +28,7 @@ const indexTemplate = `
 						"type": "custom",
 						"tokenizer": "nori_user_dict",
 						"filter": [
-							"my_posfilter"
+							"gachi_posfilter"
 						]
 					}
 				},
@@ -40,27 +40,32 @@ const indexTemplate = `
 					}
 				},
 				"filter": {
-					"my_posfilter": {
+					"gachi_posfilter": {
 						"type": "nori_part_of_speech",
 						"stoptags": [
 							"E",
+							"EF",
+							"EC",
 							"IC",
 							"J",
 							"MAG",
 							"MAJ",
 							"MM",
+							"NA",
 							"SP",
 							"SSC",
 							"SSO",
 							"SC",
 							"SE",
+							"UNA",
+							"VSV",
+							"VA",
+							"VV",
+							"VX",
 							"XPN",
 							"XSA",
 							"XSN",
-							"XSV",
-							"UNA",
-							"NA",
-							"VSV"
+							"XSV"
 						]
 					}
 				}
@@ -73,7 +78,7 @@ const indexTemplate = `
 				"type": "date"
 			},
 			"creator": {
-				"type": "text"
+				"type": "keyword"
 			},
 			"title": {
 				"type": "text",
@@ -84,14 +89,16 @@ const indexTemplate = `
 				"analyzer": "nori_analyzer"
 			},
 			"url": {
-				"type": "text"
+				"type": "text",
+				"index": false
 			},
 			"short_icon_url": {
 				"type": "text",
 				"index": false
 			},
 			"image_url": {
-				"type": "text"
+				"type": "text",
+				"index": false
 			}
 		}
 	}
@@ -168,7 +175,7 @@ func (e *Elasticsearch) Write(cd <-chan gachifinder.GachiData) error {
 	go func () {
 		for data := range cd {
 			m := make(map[string]interface{})
-			m["@timestamp"] 	= data.Timestamp.Unix()
+			m["@timestamp"] 	= data.Timestamp
 			m["creator"] 		= data.Creator
 			m["title"] 			= data.Title
 			m["description"] 	= data.Description

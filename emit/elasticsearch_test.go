@@ -50,7 +50,7 @@ func TestElasticsearch_Write(t *testing.T) {
 		// The closure pattern of the same with Scraper Do producer.
 		cd := func () (<-chan gachifinder.GachiData) {
 			cd := make(chan gachifinder.GachiData)
-			timestamp := time.Now()
+			timestamp := time.Now().UTC().Format("2006-01-02T15:04:05")
 
 			go func() {
 				emitData := []gachifinder.GachiData{

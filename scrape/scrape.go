@@ -18,7 +18,7 @@ type Scrape struct {
 
 	// Unexported ...
 	c 			*colly.Collector	// Will be assigned by inside Do func.
-	timestamp 	time.Time
+	timestamp 	string
 }
 
 // Do creates colly.collector and queue, and then do and wait till done
@@ -58,7 +58,7 @@ func (s *Scrape) Do(f gachifinder.ParsingHandler) (<-chan gachifinder.GachiData)
 		f(cd)
 
 		// Consume URLs.
-		s.timestamp = time.Now()
+		s.timestamp = time.Now().UTC().Format("2006-01-02T15:04:05")
 		q.Run(s.c)
 		// Wait for the crawling to complete.
 		s.c.Wait()
