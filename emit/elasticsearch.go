@@ -87,7 +87,14 @@ const indexTemplate = `
 				"type": "date"
 			},
 			"creator": {
-				"type": "keyword"
+				"type": "text",
+				"analyzer": "gachi_analyzer",
+				"fields": {
+					"keyword": {
+						"type": "keyword",
+						"normalizer": "gachi_normalizer"
+					}
+				}
 			},
 			"title": {
 				"type": "text",
