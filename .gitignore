@@ -1,4 +1,7 @@
 # Directories
+cmd/gachifinder/windows
+cmd/gachifinder/osx
+cmd/gachifinder/linux
 
 # Binaries for programs and plugins
 cmd/gachifinder/gachifinder
