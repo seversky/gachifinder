@@ -24,16 +24,16 @@ const indexTemplate = `
 		"index": {
 			"analysis": {
 				"analyzer": {
-					"nori_analyzer": {
+					"gachi_analyzer": {
 						"type": "custom",
-						"tokenizer": "nori_user_dict",
+						"tokenizer": "gachi_user_dict",
 						"filter": [
 							"gachi_posfilter"
 						]
 					}
 				},
 				"tokenizer": {
-					"nori_user_dict": {
+					"gachi_user_dict": {
 						"type": "nori_tokenizer",
 						"decompound_mode": "mixed",
 						"user_dictionary": "userdict_ko.txt"
@@ -68,6 +68,15 @@ const indexTemplate = `
 							"XSV"
 						]
 					}
+				},
+				"normalizer": {
+					"gachi_normalizer": {
+						"type": "custom",
+						"filter": [
+							"lowercase",
+							"asciifolding"
+						]
+					}
 				}
 			}
 		}
@@ -82,15 +91,21 @@ const indexTemplate = `
 			},
 			"title": {
 				"type": "text",
-				"analyzer": "nori_analyzer"
+				"analyzer": "gachi_analyzer",
+				"fields": {
+					"keyword": {
+						"type": "keyword",
+						"normalizer": "gachi_normalizer"
+					}
+				}
 			},
 			"description": {
 				"type": "text",
-				"analyzer": "nori_analyzer"
+				"analyzer": "gachi_analyzer"
 			},
 			"url": {
-				"type": "text",
-				"index": false
+				"type": "keyword",
+				"normalizer": "gachi_normalizer"
 			},
 			"short_icon_url": {
 				"type": "text",
@@ -183,7 +198,7 @@ func (e *Elasticsearch) Write(cd <-chan gachifinder.GachiData) error {
 			m["short_icon_url"]	= data.ShortCutIconURL
 			m["image_url"] 		= data.ImageURL
 
-			br := elastic.NewBulkIndexRequest().Index("gachifinder").Doc(m)
+			br := elastic.NewBulkIndexRequest().Index(templateName).Doc(m)
 			bulkRequest.Add(br)
 		}
 		wg.Done()
