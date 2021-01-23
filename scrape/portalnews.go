@@ -17,11 +17,6 @@ type PortalNews struct {
 
 // ParsingHandler registers to subvisit and parse the scraped HTML.
 func (p *PortalNews) ParsingHandler(cd chan<- gachifinder.GachiData) {
-	if p.c == nil {
-		fmt.Println("colly.Collector is nil")
-		return
-	}
-
 	p.c.OnRequest(func(r *colly.Request) {
 		fmt.Println("visiting", r.URL)
 	})
