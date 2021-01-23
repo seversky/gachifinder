@@ -108,7 +108,13 @@ const indexTemplate = `
 			},
 			"description": {
 				"type": "text",
-				"analyzer": "gachi_analyzer"
+				"analyzer": "gachi_analyzer",
+				"fields": {
+					"keyword": {
+						"type": "keyword",
+						"normalizer": "gachi_normalizer"
+					}
+				}
 			},
 			"url": {
 				"type": "keyword",
