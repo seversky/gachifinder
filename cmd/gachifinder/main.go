@@ -38,7 +38,7 @@ func main() {
 
 	err := em.Connect()
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 	defer em.Close()
 
@@ -49,7 +49,7 @@ func main() {
 
 		err = em.Write(cd)
 		if err != nil {
-			fmt.Println(err)
+			panic(err)
 		}
 
 		fmt.Println("I! Crawling success", time.Now())
