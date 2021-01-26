@@ -5,6 +5,7 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/go-co-op/gocron"
 	"github.com/seversky/gachifinder"
 	"github.com/seversky/gachifinder/scrape"
 	"github.com/seversky/gachifinder/emit"
@@ -42,9 +43,9 @@ func main() {
 	}
 	defer em.Close()
 
-	// This is the temporary routine run around every 5 minutes.
-	// To do: I'll apply one of some scheduler modules. eg, github.com/go-co-op/gocron.
-	for {
+	// defines a new scheduler that schedules and runs jobs
+	js := gocron.NewScheduler(time.Local)
+	_, errJs := js.Every(5).Minutes().Do(func() {
 		cd := s.Do(s.ParsingHandler)
 
 		err = em.Write(cd)
@@ -52,7 +53,13 @@ func main() {
 			panic(err)
 		}
 
-		fmt.Println("I! Crawling success", time.Now())
-		time.Sleep(4 * time.Minute)
-	}
+		fmt.Println("I! Crawling is done successfully at", time.Now())
+		_, tNext := js.NextRun()
+    	fmt.Println("I! It'll get begun at", tNext)
+	})
+	if errJs != nil {
+        panic(err)
+    }
+
+	js.StartBlocking()
 }

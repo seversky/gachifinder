@@ -26,6 +26,10 @@ func (s *Scrape) Do(f gachifinder.ParsingHandler) (<-chan gachifinder.GachiData)
 	cd := make(chan gachifinder.GachiData)
 
 	go func () {
+		// Record the beginning time.
+		s.timestamp = time.Now().UTC().Format("2006-01-02T15:04:05")
+		fmt.Println("I! It gets begun at", time.Now())
+
 		// Instantiate default collector
 		s.c = colly.NewCollector(
 			colly.UserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36"),
@@ -62,7 +66,6 @@ func (s *Scrape) Do(f gachifinder.ParsingHandler) (<-chan gachifinder.GachiData)
 		f(cd)
 
 		// Consume URLs.
-		s.timestamp = time.Now().UTC().Format("2006-01-02T15:04:05")
 		err = q.Run(s.c)
 		if err != nil {
 			fmt.Println("Running the queue is Failed:", err)
