@@ -218,23 +218,27 @@ func (e *Elasticsearch) Write(cd <-chan gachifinder.GachiData) error {
 	}()
 	wg.Wait()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10 * time.Second)
 	defer cancel()
 
-	res, err := bulkRequest.Do(ctx)
+	for retry := 1; retry < 4; retry++ {
+		res, err := bulkRequest.Do(ctx)
 
-	if err != nil {
-		return fmt.Errorf("Error sending bulk request to Elasticsearch: %s", err)
-	}
-
-	if res.Errors {
-		for id, err := range res.Failed() {
-			fmt.Printf("E! Elasticsearch indexing failure, id: %d, error: %s, caused by: %s, %s", id, err.Error.Reason, err.Error.CausedBy["reason"], err.Error.CausedBy["type"])
+		if err != nil {
+			fmt.Printf("In %d tried, Error sending bulk request to Elasticsearch: %s", retry, err)
+			continue
+		} else {
+			if res.Errors {
+				for id, err := range res.Failed() {
+					fmt.Printf("E! Elasticsearch indexing failure, id: %d, error: %s, caused by: %s, %s", id, err.Error.Reason, err.Error.CausedBy["reason"], err.Error.CausedBy["type"])
+				}
+				return fmt.Errorf("W! Elasticsearch failed to index %d metrics", len(res.Failed()))
+			}
+			return nil
 		}
-		return fmt.Errorf("W! Elasticsearch failed to index %d metrics", len(res.Failed()))
 	}
 
-	return nil
+	return fmt.Errorf("Retry counts are exceeded")
 }
 
 func (e *Elasticsearch) manageTemplate(ctx context.Context) error {

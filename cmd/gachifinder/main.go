@@ -50,12 +50,13 @@ func main() {
 
 		err = em.Write(cd)
 		if err != nil {
-			panic(err)
+			fmt.Println(err)
+			fmt.Println("I! Crawling is failed at", time.Now())
+		} else {
+			fmt.Println("I! Crawling is done successfully at", time.Now())
 		}
-
-		fmt.Println("I! Crawling is done successfully at", time.Now())
 		_, tNext := js.NextRun()
-    	fmt.Println("I! It'll get begun at", tNext)
+			fmt.Println("I! It'll get begun at", tNext)
 	})
 	if errJs != nil {
         panic(err)
