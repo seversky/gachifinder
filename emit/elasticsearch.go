@@ -211,7 +211,8 @@ func (e *Elasticsearch) Write(cd <-chan gachifinder.GachiData) error {
 			m["short_icon_url"]	= data.ShortCutIconURL
 			m["image_url"] 		= data.ImageURL
 
-			br := elastic.NewBulkIndexRequest().Index(templateName).Doc(m)
+			indexName := e.generateIndexName(data.Timestamp)
+			br := elastic.NewBulkIndexRequest().Index(indexName).Doc(m)
 			bulkRequest.Add(br)
 		}
 		wg.Done()
@@ -263,4 +264,9 @@ func (e *Elasticsearch) manageTemplate(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+func (e *Elasticsearch) generateIndexName(timestamp string) string {
+	n := timestamp[:10]
+	return fmt.Sprintf("%s_%s", templateName, n)
 }
