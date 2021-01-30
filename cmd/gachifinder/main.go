@@ -11,7 +11,7 @@ import (
 	"github.com/seversky/gachifinder/emit"
 )
 
-const esURL = "http://192.168.56.105:9200"
+const esURL = "http://192.168.219.100:9200"
 
 func main() {
 	runtime.GOMAXPROCS(1)
@@ -51,7 +51,7 @@ func main() {
 		err = em.Write(cd)
 		if err != nil {
 			fmt.Println(err)
-			fmt.Println("I! Crawling is failed at", time.Now())
+			fmt.Println("E! Crawling is failed at", time.Now())
 		} else {
 			fmt.Println("I! Crawling is done successfully at", time.Now())
 		}

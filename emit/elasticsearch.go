@@ -226,20 +226,20 @@ func (e *Elasticsearch) Write(cd <-chan gachifinder.GachiData) error {
 		res, err := bulkRequest.Do(ctx)
 
 		if err != nil {
-			fmt.Printf("In %d tried, Error sending bulk request to Elasticsearch: %s", retry, err)
+			fmt.Printf("W! In %d tried, Error sending bulk request to Elasticsearch: %s\n", retry, err)
 			continue
 		} else {
 			if res.Errors {
 				for id, err := range res.Failed() {
-					fmt.Printf("E! Elasticsearch indexing failure, id: %d, error: %s, caused by: %s, %s", id, err.Error.Reason, err.Error.CausedBy["reason"], err.Error.CausedBy["type"])
+					fmt.Printf("E! Elasticsearch indexing failure, id: %d, error: %s, caused by: %s, %s\n", id, err.Error.Reason, err.Error.CausedBy["reason"], err.Error.CausedBy["type"])
 				}
-				return fmt.Errorf("W! Elasticsearch failed to index %d metrics", len(res.Failed()))
+				return fmt.Errorf("E! Elasticsearch failed to index %d metrics", len(res.Failed()))
 			}
 			return nil
 		}
 	}
 
-	return fmt.Errorf("Retry counts are exceeded")
+	return fmt.Errorf("E! Retry counts are exceeded")
 }
 
 func (e *Elasticsearch) manageTemplate(ctx context.Context) error {
