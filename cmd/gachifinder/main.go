@@ -11,7 +11,7 @@ import (
 	"github.com/seversky/gachifinder/emit"
 )
 
-const esURL = "http://192.168.219.100:9200"
+const esURL = "http://localhost:9200"
 
 func main() {
 	runtime.GOMAXPROCS(1)

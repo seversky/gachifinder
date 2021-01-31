@@ -8,7 +8,7 @@ import (
 	"github.com/seversky/gachifinder"
 )
 
-const esURL = "http://192.168.56.105:9200"
+const esURL = "http://localhost:9200"
 
 func TestEmit_Connect(t *testing.T) {
 	test := struct {
