@@ -1,12 +1,12 @@
 package emit
 
 import (
-	"fmt"
-	"time"
-	"strconv"
 	"context"
+	"fmt"
+	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/olivere/elastic/v7"
 	"github.com/seversky/gachifinder"
@@ -86,6 +86,10 @@ const indexTemplate = `
 			"@timestamp": {
 				"type": "date"
 			},
+			"visit_host": {
+				"type": "keyword",
+				"normalizer": "gachi_normalizer"
+			},
 			"creator": {
 				"type": "text",
 				"analyzer": "gachi_analyzer",
@@ -138,7 +142,7 @@ var _ gachifinder.Emitter = &Elasticsearch{}
 type Elasticsearch struct {
 	URLs                []string
 
-	// Unexported ...
+	// Unexport ...
 	client *elastic.Client
 	majorReleaseNumber  int
 }
@@ -195,15 +199,16 @@ func (e *Elasticsearch) Close() {
 }
 
 // Write the data into the Elasticsearch.
-func (e *Elasticsearch) Write(cd <-chan gachifinder.GachiData) error {
+func (e *Elasticsearch) Write(dc <-chan gachifinder.GachiData) error {
 	var wg sync.WaitGroup
 	bulkRequest := e.client.Bulk()
 
 	wg.Add(1)
 	go func () {
-		for data := range cd {
+		for data := range dc {
 			m := make(map[string]interface{})
 			m["@timestamp"] 	= data.Timestamp
+			m["visit_host"]		= data.VisitHost
 			m["creator"] 		= data.Creator
 			m["title"] 			= data.Title
 			m["description"] 	= data.Description

@@ -7,8 +7,8 @@ import (
 
 	"github.com/go-co-op/gocron"
 	"github.com/seversky/gachifinder"
-	"github.com/seversky/gachifinder/scrape"
 	"github.com/seversky/gachifinder/emit"
+	"github.com/seversky/gachifinder/scrape"
 )
 
 const esURL = "http://localhost:9200"
@@ -17,19 +17,19 @@ func main() {
 	runtime.GOMAXPROCS(1)
 	fmt.Println("Starting gachifinder with", runtime.GOMAXPROCS(0), "core(s).")
 
-	var p scrape.PortalNews
-	p.VisitDomains = []string {
-		"https://news.naver.com/",
-		// "https://news.daum.net/",
+	var sc scrape.Scrape
+	sc.VisitDomains = []string {
+		"https://" + scrape.NaverNews,
+		"https://" + scrape.DaumNews,
 	}
-	p.AllowedDomains = []string {
+	sc.AllowedDomains = []string {
 		"news.naver.com",
 		"news.naver.com/main",
 		"news.daum.net",
 		"news.v.daum.net/v",
 	}
 
-	var s gachifinder.Scraper = &p
+	var s scrape.Scraper = &sc
 
 	e := &emit.Elasticsearch {
 		URLs: []string{esURL},
@@ -46,9 +46,12 @@ func main() {
 	// defines a new scheduler that schedules and runs jobs
 	js := gocron.NewScheduler(time.Local)
 	_, errJs := js.Every(5).Minutes().Do(func() {
-		cd := s.Do(s.ParsingHandler)
+		fs := []scrape.ParsingHandler {
+			scrape.OnHTMLNaverHeadlineNews,
+		}
+		dc := s.Do(fs)
 
-		err = em.Write(cd)
+		err = em.Write(dc)
 		if err != nil {
 			fmt.Println(err)
 			fmt.Println("E! Crawling is failed at", time.Now())

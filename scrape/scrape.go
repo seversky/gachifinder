@@ -9,25 +9,34 @@ import (
 	"github.com/seversky/gachifinder"
 )
 
-var _ gachifinder.Scraper = &Scrape{}
+// ParsingHandler ...
+type ParsingHandler func(chan<- gachifinder.GachiData, *Scrape)
+
+// Scraper interface is a crawling actor.
+type Scraper interface {
+	// Do is a producer in a part of a pipeline
+	Do([]ParsingHandler) (<-chan gachifinder.GachiData)
+}
+
+var _ Scraper = &Scrape{}
 
 // Scrape struct.
 type Scrape struct {
 	VisitDomains	[]string
 	AllowedDomains	[]string
 
-	// Unexported ...
+	// Unexport ...
 	c 			*colly.Collector	// Will be assigned by inside Do func.
 	timestamp 	string
 }
 
 // Do creates colly.collector and queue, and then do and wait till done
-func (s *Scrape) Do(f gachifinder.ParsingHandler) (<-chan gachifinder.GachiData) {
+func (s *Scrape) Do(fs []ParsingHandler) (<-chan gachifinder.GachiData) {
 	// Record the beginning time.
 	s.timestamp = time.Now().UTC().Format("2006-01-02T15:04:05")
 	fmt.Println("I! It gets begun at", time.Now())
 
-	cd := make(chan gachifinder.GachiData)
+	dc := make(chan gachifinder.GachiData)
 
 	go func () {
 		// Instantiate default collector
@@ -40,9 +49,9 @@ func (s *Scrape) Do(f gachifinder.ParsingHandler) (<-chan gachifinder.GachiData)
 
 		s.c.Limit(&colly.LimitRule{
 			DomainGlob:  "*",
-			Parallelism: 1,
-			Delay: 100 * time.Millisecond,
-			RandomDelay: 2 * time.Second,
+			Parallelism: 20,
+			Delay: time.Second,
+			RandomDelay: 5 * time.Second,
 		})
 
 		// create a request queue with 1 consumer threads
@@ -63,7 +72,23 @@ func (s *Scrape) Do(f gachifinder.ParsingHandler) (<-chan gachifinder.GachiData)
 			}
 		}
 
-		f(cd)
+		// Common handlers
+		s.c.OnRequest(func(r *colly.Request) {
+			fmt.Println("visiting", r.URL)
+		})
+	
+		s.c.OnResponse(func(r *colly.Response) {
+			// fmt.Println(string(r.Body))
+		})
+
+		s.c.OnError(func(r *colly.Response, err error) {
+			fmt.Println("Request URL:", r.Request.URL, "failed with response:", r, "\nError:", err)
+		})
+
+		// Specified Parse handlers.
+		for _, f := range fs {
+			f(dc, s)
+		}
 
 		// Consume URLs.
 		err = q.Run(s.c)
@@ -74,12 +99,8 @@ func (s *Scrape) Do(f gachifinder.ParsingHandler) (<-chan gachifinder.GachiData)
 		// Wait for the crawling to complete.
 		s.c.Wait()
 
-		close(cd)
+		close(dc)
 	}()
 
-	return cd
+	return dc
 }
-
-// ParsingHandler is an abstract function.
-// this has to be implemented into the embedded(is-a) method.
-func (s *Scrape) ParsingHandler(chan<- gachifinder.GachiData) {}

@@ -1,15 +1,5 @@
 package gachifinder
 
-// ParsingHandler ...
-type ParsingHandler func(chan<- GachiData)
-
-// Scraper interface is a crawling actor.
-type Scraper interface {
-	// Do is a producer in a part of a pipeline
-	Do(ParsingHandler) (<-chan GachiData)
-	ParsingHandler(chan<- GachiData)
-}
-
 // Emitter interface to sent or write the data to the targets.
 type Emitter interface {
 	// Connect to the Emitter; connect is only called once when the plugin starts.
@@ -27,6 +17,7 @@ type Emitter interface {
 // GachiData is contents to collect data by scraper.
 type GachiData struct {
 	Timestamp		string
+	VisitHost		string
 	Creator			string
 	Title			string
 	Description		string

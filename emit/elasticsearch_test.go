@@ -1,9 +1,9 @@
 package emit
 
 import (
+	"fmt"
 	"testing"
 	"time"
-	"fmt"
 
 	"github.com/seversky/gachifinder"
 )
@@ -49,14 +49,15 @@ func TestElasticsearch_Write(t *testing.T) {
 		defer test.e.Close()
 
 		// The closure pattern of the same with Scraper Do producer.
-		cd := func() <-chan gachifinder.GachiData {
-			cd := make(chan gachifinder.GachiData)
+		dc := func() <-chan gachifinder.GachiData {
+			dc := make(chan gachifinder.GachiData)
 			timestamp := time.Now().UTC().Format("2006-01-02T15:04:05")
 
 			go func() {
 				emitData := []gachifinder.GachiData{
 					{
 						Timestamp:       timestamp,
+						VisitHost:       "news.naver.com",
 						ShortCutIconURL: "https://ssl.pstatic.net/static.news/image/news/2014/favicon/favicon.ico",
 						Title:           "이재용 부회장 2년6개월 실형…남은 형량 1년반 다 채울까",
 						URL:             "https://news.naver.com/main/read.nhn?mode=LSD&mid=sec&oid=421&aid=0005114764&sid1=001",
@@ -66,6 +67,7 @@ func TestElasticsearch_Write(t *testing.T) {
 					},
 					{
 						Timestamp:       timestamp,
+						VisitHost:       "news.naver.com",
 						ShortCutIconURL: "https://ssl.pstatic.net/static.news/image/news/2014/favicon/favicon.ico",
 						Title:           "文 ‘입양아 바꾸기’에 들끓은 여론…靑 “사전위탁제 말한 것”",
 						URL:             "https://news.naver.com/main/read.nhn?mode=LSD&mid=sec&oid=025&aid=0003070628&sid1=001",
@@ -76,15 +78,15 @@ func TestElasticsearch_Write(t *testing.T) {
 				}
 
 				for _, data := range emitData {
-					cd <- data
+					dc <- data
 				}
-				close(cd)
+				close(dc)
 			}()
 
-			return cd
+			return dc
 		}()
 
-		err = test.e.Write(cd)
+		err = test.e.Write(dc)
 		if err != nil {
 			t.Error(err)
 		}
