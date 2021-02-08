@@ -7,7 +7,6 @@ services:
       dockerfile: ./elasticsearch/Dockerfile
     image: elasticsearch:7.10.1
     environment:
-      - discovery.type=single-node
       - bootstrap.memory_lock=true
       - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
       - TZ=Asia/Seoul
@@ -20,6 +19,7 @@ services:
     volumes:
       - esdata:/usr/share/elasticsearch/data
       - ./elasticsearch/userdict_ko.txt:/usr/share/elasticsearch/config/userdict_ko.txt
+      - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
     ports:
       - 9200:9200
       - 9300:9300
@@ -37,6 +37,8 @@ services:
       - ELASTICSERCH_UTL=http://elasticsearch:9200
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
       - TZ=Asia/Seoul
+    volumes:
+      - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
     #restart: always
     privileged: true
 
