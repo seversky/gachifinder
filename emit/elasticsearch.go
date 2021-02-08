@@ -153,6 +153,7 @@ func (e *Elasticsearch) Connect() error {
 	defer cancel()
 
 	client, err := elastic.NewClient(
+		elastic.SetBasicAuth("elastic", "changeme"),
 		elastic.SetURL(e.URLs...),
 		elastic.SetSniff(false),
 		elastic.SetHealthcheckInterval(10 * time.Second),
