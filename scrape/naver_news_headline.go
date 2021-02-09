@@ -64,7 +64,7 @@ func OnHTMLNaverHeadlineNews(dc chan<- gachifinder.GachiData, s *Scrape) {
 	})
 
 	s.c.OnHTML("head", func(e *colly.HTMLElement) {
-		if e.Request.URL.Host != NaverNews || e.Request.URL.Path == "/" {
+		if e.Request.URL.Host != NaverNews || len(e.Request.URL.Path) < 2 {
 			return // Skip if called from the root domain like "news.naver.com"
 		}
 
