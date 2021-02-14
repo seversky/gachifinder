@@ -23,9 +23,8 @@ func TestScrape_Do(t *testing.T) {
 					},
 					AllowedDomains: []string {
 						"news.naver.com",
-						"news.naver.com/main",
 						"news.daum.net",
-						"news.v.daum.net/v",
+						"news.v.daum.net",
 					},
 				},
 		},
@@ -37,6 +36,7 @@ func TestScrape_Do(t *testing.T) {
 
 			fs := []ParsingHandler {
 				OnHTMLNaverHeadlineNews,
+				OnHTMLDaumHeadlineNews,
 			}
 			dc := tt.s.Do(fs)
 
@@ -55,14 +55,15 @@ func TestScrape_Do(t *testing.T) {
 
 				fmt.Println("The number of the collected data:", length)
 				for _, data := range emitData {
-					fmt.Println(data.Timestamp)
-					fmt.Println(data.VisitHost)
-					fmt.Println(data.Creator)
-					fmt.Println(data.Title)
-					fmt.Println(data.Description)
-					fmt.Println(data.URL)
-					fmt.Println(data.ShortCutIconURL)
-					fmt.Println(data.ImageURL)
+					fmt.Println("")
+					fmt.Println("Timestamp =", data.Timestamp)
+					fmt.Println("VisitHost =", data.VisitHost)
+					fmt.Println("Creator =", data.Creator)
+					fmt.Println("Title =", data.Title)
+					fmt.Println("Description =", data.Description)
+					fmt.Println("URL =", data.URL)
+					fmt.Println("ShortCutIconURL =", data.ShortCutIconURL)
+					fmt.Println("ImageURL =", data.ImageURL)
 				}
 
 				wg.Done()

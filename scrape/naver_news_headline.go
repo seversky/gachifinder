@@ -13,16 +13,14 @@ const NaverNews = "news.naver.com"
 // OnHTMLNaverHeadlineNews registers to subvisit and parse the scraped "new.naver.com" HTML.
 func OnHTMLNaverHeadlineNews(dc chan<- gachifinder.GachiData, s *Scrape) {
 	// The headline photo news of left side on news.naver.com
-	s.c.OnHTML(".hdline_flick_item", func(e *colly.HTMLElement) {
+	s.c.OnHTML("div.hdline_flick_item", func(e *colly.HTMLElement) {
 		if e.Request.URL.Host != NaverNews {
 			return
 		}
 
 		e.ForEach("a[href]", func(_ int, e *colly.HTMLElement) {
 			link := e.Attr("href")
-			if text := e.ChildText("p.hdline_flick_tit"); text != "" {
-				// fmt.Println(".hdline_flick_item: Link found:", text, "->", link)
-
+			if c := e.ChildAttr("p[class]", "class"); c == "hdline_flick_tit" {
 				// Visit link found on page on a new thread(go routine)
 				e.Request.Visit(link)
 			}
@@ -30,34 +28,25 @@ func OnHTMLNaverHeadlineNews(dc chan<- gachifinder.GachiData, s *Scrape) {
 	})
 
 	// The headline news list of right side on news.naver.com
-	s.c.OnHTML(".hdline_article_tit", func(e *colly.HTMLElement) {
+	s.c.OnHTML("div.hdline_article_tit", func(e *colly.HTMLElement) {
 		if e.Request.URL.Host != NaverNews {
 			return
 		}
 
-		e.ForEach("a[href]", func(_ int, e *colly.HTMLElement) {
-			link := e.Attr("href")
-			if text := strings.TrimSpace(strings.Trim(e.Text, "\n")); text != "" {
-				// fmt.Println(".hdline_article_tit: Link found:", text, "->", link)
-
-				// Visit link found on page on a new thread
-				e.Request.Visit(link)
-			}
-		})
+		link := e.ChildAttr("a[href]", "href")
+		e.Request.Visit(link)
 	})
 
 	// The entire news except headline on news.naver.com
-	s.c.OnHTML(".com_list", func(e *colly.HTMLElement) {
+	s.c.OnHTML("div.com_list", func(e *colly.HTMLElement) {
 		if e.Request.URL.Host != NaverNews {
 			return
 		}
 
 		e.ForEach("a[href]", func(_ int, e *colly.HTMLElement) {
-			link := e.Attr("href")
 			if text := strings.TrimSpace(strings.Trim(e.Text, "\n")); text != "" {
-				// fmt.Println(".com_list: Link found:", text, "->", link)
-
 				// Visit link found on page on a new thread
+				link := e.Attr("href")
 				e.Request.Visit(link)
 			}
 		})
@@ -70,7 +59,7 @@ func OnHTMLNaverHeadlineNews(dc chan<- gachifinder.GachiData, s *Scrape) {
 
 		emitData := gachifinder.GachiData{
 			Timestamp: s.timestamp,
-			VisitHost: e.Request.URL.Host,
+			VisitHost: NaverNews,
 			ShortCutIconURL: e.ChildAttr("link[rel='shortcut icon']", "href"),
 			Title: e.ChildAttr("meta[name='twitter:title']", "content"),
 			URL: e.ChildAttr("meta[property='og:url']", "content"),

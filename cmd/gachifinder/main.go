@@ -24,9 +24,8 @@ func main() {
 	}
 	sc.AllowedDomains = []string {
 		"news.naver.com",
-		"news.naver.com/main",
 		"news.daum.net",
-		"news.v.daum.net/v",
+		"news.v.daum.net",
 	}
 
 	var s scrape.Scraper = &sc
@@ -48,6 +47,7 @@ func main() {
 	_, errJs := js.Every(5).Minutes().Do(func() {
 		fs := []scrape.ParsingHandler {
 			scrape.OnHTMLNaverHeadlineNews,
+			scrape.OnHTMLDaumHeadlineNews,
 		}
 		dc := s.Do(fs)
 
