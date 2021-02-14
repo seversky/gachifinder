@@ -43,12 +43,13 @@ func OnHTMLDaumHeadlineNews(dc chan<- gachifinder.GachiData, s *Scrape) {
 
 		press, isExist := e.DOM.Siblings().Find("div.head_view").Find("img.thumb_g").Attr("alt")
 		if isExist {
+			url := e.Request.URL.Scheme + "://" + e.Request.URL.Host + e.Request.URL.Path
 			emitData := gachifinder.GachiData{
 				Timestamp: s.timestamp,
 				VisitHost: DaumNews,
 				ShortCutIconURL: "https:" + e.ChildAttr("link[rel='shortcut icon']", "href"),
 				Title: e.ChildAttr("meta[property='og:title']", "content"),
-				URL: e.ChildAttr("meta[property='og:url']", "content"),
+				URL: url,
 				ImageURL: e.ChildAttr("meta[property='og:image']", "content"),
 				Creator: press,
 				Description: e.ChildAttr("meta[property='og:description']", "content"),
