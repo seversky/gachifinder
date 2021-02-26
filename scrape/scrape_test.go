@@ -21,11 +21,11 @@ func TestScrape_Do(t *testing.T) {
 						"https://" + NaverNews,
 						"https://" + DaumNews,
 					},
-					AllowedDomains: []string {
-						"news.naver.com",
-						"news.daum.net",
-						"news.v.daum.net",
-					},
+					// AllowedDomains: []string {
+					// 	"news.naver.com",
+					// 	"news.daum.net",
+					// 	"news.v.daum.net",
+					// },
 				},
 		},
 	}

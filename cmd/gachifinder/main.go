@@ -22,11 +22,11 @@ func main() {
 		"https://" + scrape.NaverNews,
 		"https://" + scrape.DaumNews,
 	}
-	sc.AllowedDomains = []string {
-		"news.naver.com",
-		"news.daum.net",
-		"news.v.daum.net",
-	}
+	// sc.AllowedDomains = []string {
+	// 	"news.naver.com",
+	// 	"news.daum.net",
+	// 	"news.v.daum.net",
+	// }
 
 	var s scrape.Scraper = &sc
 
