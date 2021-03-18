@@ -41,9 +41,9 @@ This is an extendable output module via [Emitter](https://github.com/seversky/ga
 ## Using Docker for a test environment.
 
 ```
-git clone https://github.com/seversky/gachifinder.git
-cd docker
-docker-compose up -d --build
+$ git clone https://github.com/seversky/gachifinder.git
+$ cd docker
+$ docker-compose up -d --build
 ```
 
 If Elasticsearch account **_has been changed_**, you need to type into [docker/kibana/kibana.yml](https://github.com/seversky/gachifinder/blob/master/docker/kibana/kibana.yml)
