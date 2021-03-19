@@ -13,7 +13,10 @@
       "program": "${workspaceFolder}/cmd/gachifinder",
       "output": "gachifinder_debug.exe",
       "env": {},
-      "args": [],
+      "args": [
+        // "-d",
+        // "-c=${workspaceFolder}/cmd/gachifinder/config/gachifinder.yml"
+      ],
       "showLog": true
     }
   ]

@@ -1,4 +1,4 @@
-# gachifinder
+# GachiFinder
 
 This project is an agent for scraping, parsing and writing to some storages.<br />
 Firstly, it has been scraped the news on the portal(eg, Naver/Daum) in Korea.
