@@ -1,5 +1,34 @@
 package gachifinder
 
+// Config is the options of gachifinder.
+type Config struct {
+	Global struct {
+		MaxUsedCores 	int 	`yaml:"max_used_cores"`
+		Interval		int		`yaml:"interval"`
+	} `yaml:"global"`
+
+	Scraper struct {
+		VisitDomains			[]string 	`yaml:"visit_domains"`
+		AllowedDomains			[]string 	`yaml:"allowed_domains"`
+		UserAgent				string 		`yaml:"user_agent"`
+		MaxDepthToVisit			int			`yaml:"max_depth_to_visit"`
+		Async					bool		`yaml:"async"`
+		Parallelism				int			`yaml:"parallelism"`
+		Delay					int			`yaml:"delay"`
+		RandomDelay				int			`yaml:"random_delay"`
+		ConsumerQueueThreads	int			`yaml:"consumer_queue_threads"`
+		ConsumerQueueMaxSize	int			`yaml:"consumer_queue_max_size"`
+	} `yaml:"scraper"`
+
+	Emitter struct {
+		Elasticsearch struct {
+			Hosts		[]string	`yaml:"hosts"`
+			Username	string		`yaml:"username"`
+			Password	string		`yaml:"password"`
+		}
+	}
+}
+
 // Emitter interface to sent or write the data to the targets.
 type Emitter interface {
 	// Connect to the Emitter; connect is only called once when the plugin starts.
