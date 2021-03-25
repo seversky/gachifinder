@@ -1,8 +1,7 @@
 global:
-  # Default is 0: all cores used.
-  # If max_used_cores(n) < 0, what it means is total cores - n
+  # if zero(0), all cores used.
   max_used_cores: 1
-  # Crawing interval(min): default is 5min.
+  # Crawing interval(unit: min)
   interval: 5
 
 scraper:
@@ -13,8 +12,22 @@ scraper:
   #   - https://news.naver.com
   #   - https://news.daum.net
   user_agent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36'
-  async: true
   max_depth_to_visit: 1
+
+  # Async turns on asynchronous network communication. Use Collector.Wait() to be sure all requests have been finished.
+  async: true
+
+  # The number of the maximum allowed concurrent requests of the matching domains.
+  parallelism: 20
+  # The duration to wait before creating a new request to the matching domains.(unit: sec)
+  delay: 1
+  # The extra randomized duration to wait added to delay before creating a new request.(unit: sec)
+  random_delay: 5
+
+  # The number of consumer queue threads
+  consumer_queue_threads: 2
+  # Max size of consumer queue
+  consumer_queue_max_size: 10
 
 emitter:
   elasticsearch:

@@ -1,7 +1,7 @@
 package emit
 
 import (
-	"fmt"
+	"log"
 	"testing"
 	"time"
 
@@ -16,9 +16,9 @@ func TestEmit_Connect(t *testing.T) {
 		e    gachifinder.Emitter
 	}{
 		name: "Elasticsearch connecting test",
-		e: &Elasticsearch{
-			URLs: []string{esURL},
-		},
+		// e: &Elasticsearch{
+		// 	URLs: []string{esURL},
+		// },
 	}
 
 	t.Run(test.name, func(t *testing.T) {
@@ -36,9 +36,9 @@ func TestElasticsearch_Write(t *testing.T) {
 		e    gachifinder.Emitter
 	}{
 		name: "Elasticsearch writing test",
-		e: &Elasticsearch{
-			URLs: []string{esURL},
-		},
+		// e: &Elasticsearch{
+		// 	URLs: []string{esURL},
+		// },
 	}
 
 	t.Run(test.name, func(t *testing.T) {
@@ -99,5 +99,5 @@ func TestElasticsearch_generateIndexName(t *testing.T) {
 	if len(name) < 1{
 		t.Error("No returns any string")
 	}
-	fmt.Println(name)
+	log.Println("I!", name)
 }

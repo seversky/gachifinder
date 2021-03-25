@@ -3,6 +3,7 @@ package emit
 import (
 	"context"
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 	"sync"
@@ -140,11 +141,11 @@ var _ gachifinder.Emitter = &Elasticsearch{}
 
 // Elasticsearch struct
 type Elasticsearch struct {
-	URLs                []string
+	Config *gachifinder.Config
 
 	// Unexport ...
-	client *elastic.Client
-	majorReleaseNumber  int
+	client 				*elastic.Client
+	majorReleaseNumber	int
 }
 
 // Connect to Elasticsearch & Create index.
@@ -153,8 +154,8 @@ func (e *Elasticsearch) Connect() error {
 	defer cancel()
 
 	client, err := elastic.NewClient(
-		elastic.SetBasicAuth("elastic", "changeme"),
-		elastic.SetURL(e.URLs...),
+		elastic.SetURL(e.Config.Emitter.Elasticsearch.Hosts...),
+		elastic.SetBasicAuth(e.Config.Emitter.Elasticsearch.Username, e.Config.Emitter.Elasticsearch.Password),
 		elastic.SetSniff(false),
 		elastic.SetHealthcheckInterval(10 * time.Second),
 		elastic.SetGzip(true),
@@ -164,10 +165,10 @@ func (e *Elasticsearch) Connect() error {
 	}
 
 	// check for ES version on first node.
-	esVersion, err := client.ElasticsearchVersion(e.URLs[0])
+	esVersion, err := client.ElasticsearchVersion(e.Config.Emitter.Elasticsearch.Hosts[0])
 
 	if err != nil {
-		fmt.Println("Elasticsearch version check failed:", err)
+		log.Println("Elasticsearch version check failed:", err)
 		return err
 	}
 
@@ -177,11 +178,11 @@ func (e *Elasticsearch) Connect() error {
 		return err
 	}
 	if majorReleaseNumber < 7 {
-		return fmt.Errorf("Elasticsearch version not supported: %s", esVersion)
+		return fmt.Errorf("E! Elasticsearch version not supported: %s", esVersion)
 	}
 
-	fmt.Println("I! Elasticsearch version: " + esVersion)
-	fmt.Println("I! Elasticsearch major version number:", majorReleaseNumber)
+	log.Println("I! Elasticsearch version: " + esVersion)
+	log.Println("I! Elasticsearch major version number:", majorReleaseNumber)
 
 	e.client = client
 	e.majorReleaseNumber = majorReleaseNumber
@@ -232,12 +233,12 @@ func (e *Elasticsearch) Write(dc <-chan gachifinder.GachiData) error {
 		res, err := bulkRequest.Do(ctx)
 
 		if err != nil {
-			fmt.Printf("W! In %d tried, Error sending bulk request to Elasticsearch: %s\n", retry, err)
+			log.Printf("W! In %d tried, Error sending bulk request to Elasticsearch: %s\n", retry, err)
 			continue
 		} else {
 			if res.Errors {
 				for id, err := range res.Failed() {
-					fmt.Printf("E! Elasticsearch indexing failure, id: %d, error: %s, caused by: %s, %s\n", id, err.Error.Reason, err.Error.CausedBy["reason"], err.Error.CausedBy["type"])
+					log.Printf("E! Elasticsearch indexing failure, id: %d, error: %s, caused by: %s, %s\n", id, err.Error.Reason, err.Error.CausedBy["reason"], err.Error.CausedBy["type"])
 				}
 				return fmt.Errorf("E! Elasticsearch failed to index %d metrics", len(res.Failed()))
 			}
@@ -251,21 +252,21 @@ func (e *Elasticsearch) Write(dc <-chan gachifinder.GachiData) error {
 func (e *Elasticsearch) manageTemplate(ctx context.Context) error {
 	templateExists, errExists := e.client.IndexTemplateExists(templateName).Do(ctx)
 	if errExists != nil {
-		return fmt.Errorf("Elasticsearch template check failed, template name: '%s', error: %s", templateName, errExists)
+		return fmt.Errorf("E! Elasticsearch template check failed, template name: '%s', error: %s", templateName, errExists)
 	}
 
 	if !templateExists {
 		_, errCreateTemplate := e.client.IndexPutTemplate(templateName).BodyString(indexTemplate).Do(ctx)
 
 		if errCreateTemplate != nil {
-			return fmt.Errorf("Elasticsearch failed to create index template '%s' : %s", templateName, errCreateTemplate)
+			return fmt.Errorf("E! Elasticsearch failed to create index template '%s' : %s", templateName, errCreateTemplate)
 		}
 		templateExists, errExists := e.client.IndexTemplateExists(templateName).Do(ctx)
 		if errExists != nil {
-			return fmt.Errorf("Elasticsearch template check failed, template name: '%s', error: %s", templateName, errExists)
+			return fmt.Errorf("E! Elasticsearch template check failed, template name: '%s', error: %s", templateName, errExists)
 		}
 		if !templateExists {
-			return fmt.Errorf("Failed to create the template '%s'", templateName)
+			return fmt.Errorf("E! Failed to create the template '%s'", templateName)
 		}
 	}
 
