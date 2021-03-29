@@ -13,10 +13,10 @@ import (
 
 // Options : Cli option Flags
 type Options struct {
-	Daemon bool `short:"d" long:"daemon" description:"To run it daemon mode."`
-	ConfigPath flags.Filename `short:"c" long:"config_path" default:"../config/gachifinder.yml" env:"CONFIG_PATH" description:"Path To configure."`
-	ScrapeTest bool `short:"t" long:"test" description:"To test for crawling via a scraper only.\n(Without an emitter module)\nNOTE: Cannot Run with '-d'(daemon)"`
-	ShowVersion bool   `short:"v" long:"version" description:"Show GachiFinder version info"`
+	Daemon bool `short:"d" long:"daemon" description:"To run it daemon mode, but not supported yet!"`
+	ConfigPath flags.Filename `short:"c" long:"config_path" default:"../config/gachifinder.yml" env:"CONFIG_PATH" description:"Path To configure"`
+	ScrapeTest bool `short:"t" long:"test" description:"To test for crawling via a scraper only\n(Without an emitter module)\nNOTE: Cannot Run with '-d'(daemon)"`
+	ShowVersion bool   `short:"v" long:"version" description:"Show GachiFinder version and git revision id"`
 }
 
 var options Options
@@ -35,13 +35,12 @@ func setOptions() (gachifinder.Config, error) {
 	parser.LongDescription = `Options for GachiFinder`
 
 	if _, err := parser.Parse(); err != nil {
-		code := 1
 		if fe, ok := err.(*flags.Error); ok {
 			if fe.Type == flags.ErrHelp {
-				code = 0
+				os.Exit(0)
 			}
 		}
-		return config, fmt.Errorf("E! The program has been anomaly exited. Exit code = %d", code)
+		return config, fmt.Errorf("E! The program has been anomaly exited. Exit code = %d", 1)
 	}
 
 	if options.ShowVersion {

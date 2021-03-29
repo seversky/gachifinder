@@ -14,6 +14,7 @@
       "output": "gachifinder_debug.exe",
       "env": {},
       "args": [
+        // "-h",
         // "-v",
         // "-t",
         // "-d",
