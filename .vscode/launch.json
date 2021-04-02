@@ -11,7 +11,7 @@
       "mode": "debug",
       "buildFlags": "-ldflags='-X main.version=0.0.6'",
       "program": "${workspaceFolder}/cmd/gachifinder",
-      "output": "gachifinder_debug.exe",
+      "output": "windows/gachifinder_debug.exe",
       "env": {},
       "args": [
         // "-h",

@@ -1,8 +1,19 @@
 global:
-  # if zero(0), all cores used.
-  max_used_cores: 1
-  # Crawing interval(unit: min)
-  interval: 5
+  max_used_cores: 0 # if zero(0), all cores used.
+  interval: 5 # Crawing interval(unit: min)
+
+  log:
+    log_level: debug # one of trace, debug, info, warn[ing], error, fatal, panic
+    stdout: true
+    format: 'text' # or "json"
+    # go_time_format: '2006-01-02T15:04:05.999Z07:00' # default=RFC3339, refer to https://golang.org/src/time/format.go
+    force_colors: true
+
+    log_path: './log/gachifinder.log'
+    max_size: 1 # Max megabytes before log is rotated
+    max_age: 1 # Max number of days to retain log files
+    max_backups: 3 # Max number of old log files to keep
+    compress: true
 
 scraper:
   visit_domains:
@@ -14,20 +25,14 @@ scraper:
   user_agent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36'
   max_depth_to_visit: 1
 
-  # Async turns on asynchronous network communication. Use Collector.Wait() to be sure all requests have been finished.
-  async: true
+  async: true # Async turns on asynchronous network communication. Use Collector.Wait() to be sure all requests have been finished.
 
-  # The number of the maximum allowed concurrent requests of the matching domains.
-  parallelism: 20
-  # The duration to wait before creating a new request to the matching domains.(unit: sec)
-  delay: 1
-  # The extra randomized duration to wait added to delay before creating a new request.(unit: sec)
-  random_delay: 5
+  parallelism: 20 # The number of the maximum allowed concurrent requests of the matching domains.
+  delay: 1 # The duration to wait before creating a new request to the matching domains.(unit: sec)
+  random_delay: 5 # The extra randomized duration to wait added to delay before creating a new request.(unit: sec)
 
-  # The number of consumer queue threads
-  consumer_queue_threads: 2
-  # Max size of consumer queue
-  consumer_queue_max_size: 10
+  consumer_queue_threads: 2 # The number of consumer queue threads
+  consumer_queue_max_size: 10 # Max size of consumer queue
 
 emitter:
   elasticsearch:

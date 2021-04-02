@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/gocolly/colly/v2"
+
 	"github.com/seversky/gachifinder"
 )
 

@@ -1,8 +1,9 @@
 package main
 
 import (
-	"log"
 	"sync"
+
+	logger "github.com/sirupsen/logrus"
 
 	"github.com/seversky/gachifinder"
 	"github.com/seversky/gachifinder/scrape"
@@ -31,20 +32,20 @@ func scrapeTest(config *gachifinder.Config) {
 
 		length := len(emitData)
 		if length > 0 {
-			log.Println("I! The number of the collected data:", length)
+			logger.Println("I! The number of the collected data:", length)
 			for _, data := range emitData {
-				log.Println("")
-				log.Println("I! Timestamp =", data.Timestamp)
-				log.Println("I! VisitHost =", data.VisitHost)
-				log.Println("I! Creator =", data.Creator)
-				log.Println("I! Title =", data.Title)
-				log.Println("I! Description =", data.Description)
-				log.Println("I! URL =", data.URL)
-				log.Println("I! ShortCutIconURL =", data.ShortCutIconURL)
-				log.Println("I! ImageURL =", data.ImageURL)
+				logger.Println("")
+				logger.Println("I! Timestamp =", data.Timestamp)
+				logger.Println("I! VisitHost =", data.VisitHost)
+				logger.Println("I! Creator =", data.Creator)
+				logger.Println("I! Title =", data.Title)
+				logger.Println("I! Description =", data.Description)
+				logger.Println("I! URL =", data.URL)
+				logger.Println("I! ShortCutIconURL =", data.ShortCutIconURL)
+				logger.Println("I! ImageURL =", data.ImageURL)
 			}
 		} else {
-			log.Println("W! There is not any collected data")
+			logger.Println("W! There is not any collected data")
 		}
 
 		wg.Done()

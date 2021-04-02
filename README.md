@@ -34,7 +34,6 @@ This is an extendable output module via [Emitter](https://github.com/seversky/ga
 ### To-do list before a release version.
 
 - Application daemonize.
-- Definition for a log format.
 
 ## How to build
 

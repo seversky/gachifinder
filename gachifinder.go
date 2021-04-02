@@ -5,6 +5,18 @@ type Config struct {
 	Global struct {
 		MaxUsedCores 	int 	`yaml:"max_used_cores"`
 		Interval		int		`yaml:"interval"`
+		Log struct {
+			LogLevel		string 	`yaml:"log_level"`
+			Stdout			bool 	`yaml:"stdout"`
+			Format			string 	`yaml:"format"`
+			ForceColors		bool	`yaml:"force_colors"`
+			GoTimeFormat	string 	`yaml:"go_time_format"`
+			LogPath			string	`yaml:"log_path"`
+			MaxSize			int 	`yaml:"max_size"`
+			MaxAge			int 	`yaml:"max_age"`
+			MaxBackups		int 	`yaml:"max_backups"`
+			Compress		string 	`yaml:"compress"`
+		}`yaml:"log"`
 	} `yaml:"global"`
 
 	Scraper struct {
@@ -28,6 +40,12 @@ type Config struct {
 		}
 	}
 }
+
+// Types of Config.Global.Log.Format
+const (
+	JSON = "json"
+	TEXT = "text"
+) 
 
 // Emitter interface to sent or write the data to the targets.
 type Emitter interface {

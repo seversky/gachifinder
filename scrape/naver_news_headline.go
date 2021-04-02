@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/gocolly/colly/v2"
+
 	"github.com/seversky/gachifinder"
 )
 
