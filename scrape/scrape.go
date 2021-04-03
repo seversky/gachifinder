@@ -1,11 +1,12 @@
 package scrape
 
 import (
-	"log"
 	"time"
 
 	"github.com/gocolly/colly/v2"
 	"github.com/gocolly/colly/v2/queue"
+	logger "github.com/sirupsen/logrus"
+
 	"github.com/seversky/gachifinder"
 )
 
@@ -33,7 +34,7 @@ type Scrape struct {
 func (s *Scrape) Do(fs []ParsingHandler) (<-chan gachifinder.GachiData) {
 	// Record the beginning time.
 	s.timestamp = time.Now().UTC().Format("2006-01-02T15:04:05")
-	log.Println("I! It gets begun at", time.Now())
+	logger.Info("Begin crawling")
 
 	dc := make(chan gachifinder.GachiData)
 
@@ -60,29 +61,30 @@ func (s *Scrape) Do(fs []ParsingHandler) (<-chan gachifinder.GachiData) {
 			&queue.InMemoryQueueStorage{MaxSize: s.Config.Scraper.ConsumerQueueMaxSize}, // Use default queue storage
 		)
 		if err != nil {
-			log.Println("E! Creating Queue is Failed:", err)
-			log.Fatalln("E! error:", err)
+			logger.WithField("error", err).Fatalln("Scraper queue New(Create) fail")
 		}
 
 		for _, url := range s.Config.Scraper.VisitDomains {
 			err := q.AddURL(url)
 			if err != nil {
-				log.Println("E! Adding url into the queue is Failed:", err)
-				log.Fatalln("E! error:", err)
+				logger.WithField("error", err).Fatalln("Scraper queue AddURL fail")
 			}
 		}
 
 		// Common handlers
 		s.c.OnRequest(func(r *colly.Request) {
-			log.Println("I! visiting", r.URL)
+			logger.Infoln("visiting", r.URL)
 		})
 	
 		s.c.OnResponse(func(r *colly.Response) {
-			// log.Println(string(r.Body))
+			logger.Trace(string(r.Body))
 		})
 
 		s.c.OnError(func(r *colly.Response, err error) {
-			log.Println("E! Request URL:", r.Request.URL, "failed with response:", r, "\nError:", err)
+			logger.WithField("Request URL", r.Request.URL).
+				WithField("Failed with response", r).
+				WithField("Error", err).
+				Error("Request fail")
 		})
 
 		// Specified Parse handlers.
@@ -93,8 +95,7 @@ func (s *Scrape) Do(fs []ParsingHandler) (<-chan gachifinder.GachiData) {
 		// Consume URLs.
 		err = q.Run(s.c)
 		if err != nil {
-			log.Println("E! Running the queue is Failed:", err)
-			log.Fatalln("E! error:", err)
+			logger.WithField("error", err).Fatalln("Scraper queue Run fail")
 		}
 		// Wait for the crawling to complete.
 		s.c.Wait()

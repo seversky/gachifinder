@@ -1,12 +1,13 @@
 package main
 
 import (
-	"log"
 	"os"
 	"runtime"
 	"time"
 
 	"github.com/go-co-op/gocron"
+	logger "github.com/sirupsen/logrus"
+
 	"github.com/seversky/gachifinder"
 	"github.com/seversky/gachifinder/emit"
 	"github.com/seversky/gachifinder/scrape"
@@ -16,7 +17,7 @@ func main() {
 	// Set command options and config options
 	config, err := setOptions()
 	if err != nil {
-		log.Fatalln("E! error:", err)
+		logger.WithField("error", err).Fatalln("Option or configuration fail")
 	}
 
 	// Set used core(s)
@@ -25,8 +26,13 @@ func main() {
 	} else {
 		runtime.GOMAXPROCS(config.Global.MaxUsedCores)
 	}
-	log.Println("I! Starting gachifinder with", runtime.GOMAXPROCS(0), "core(s).")
-
+	logger.WithField("1-GO Runtime Version", runtime.Version()).
+		WithField("2-System Arch", runtime.GOARCH).
+		WithField("3-GachiFider version", version).
+		WithField("4-GachiFider revision number", commit).
+		WithField("5-Number of used CPUs", runtime.GOMAXPROCS(0)).
+		Info("Application Initializing")
+	
 	if options.ScrapeTest {
 		scrapeTest(&config)
 		os.Exit(0)
@@ -46,7 +52,7 @@ func main() {
 
 	err = em.Connect()
 	if err != nil {
-		log.Fatalln("E! error:", err)
+		logger.WithField("error", err).Fatalln("Emitter fail")
 	}
 	defer em.Close()
 
@@ -61,16 +67,15 @@ func main() {
 
 		err = em.Write(dc)
 		if err != nil {
-			log.Println(err)
-			log.Println("E! Crawling is failed at", time.Now())
+			logger.WithField("error", err).Error("Crawling is failed")
 		} else {
-			log.Println("I! Crawling is done successfully at", time.Now())
+			logger.Info("Crawling is done successfully")
 		}
 		_, tNext := js.NextRun()
-		log.Println("I! It'll get begun at", tNext)
+		logger.WithField("Next running time", tNext).Info("Crawling time")
 	})
 	if errJs != nil {
-        log.Fatalln("E! error:", err)
+        logger.WithField("error", err).Fatalln("Job scheduling fail")
     }
 
 	js.StartBlocking()

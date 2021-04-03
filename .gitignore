@@ -2,11 +2,14 @@
 cmd/gachifinder/windows
 cmd/gachifinder/osx
 cmd/gachifinder/linux
+cmd/gachifinder/log
 
 # Binaries for programs and plugins
 cmd/gachifinder/gachifinder
 *.exe
 go.sum
+
+*.log
 
 # Test binary, built with `go test -c`
 *.test

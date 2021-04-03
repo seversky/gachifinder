@@ -1,8 +1,9 @@
 package main
 
 import (
-	"log"
 	"sync"
+
+	logger "github.com/sirupsen/logrus"
 
 	"github.com/seversky/gachifinder"
 	"github.com/seversky/gachifinder/scrape"
@@ -31,20 +32,20 @@ func scrapeTest(config *gachifinder.Config) {
 
 		length := len(emitData)
 		if length > 0 {
-			log.Println("I! The number of the collected data:", length)
+			logger.WithField("The number of the collected data", length).Info("Crawling finished")
 			for _, data := range emitData {
-				log.Println("")
-				log.Println("I! Timestamp =", data.Timestamp)
-				log.Println("I! VisitHost =", data.VisitHost)
-				log.Println("I! Creator =", data.Creator)
-				log.Println("I! Title =", data.Title)
-				log.Println("I! Description =", data.Description)
-				log.Println("I! URL =", data.URL)
-				log.Println("I! ShortCutIconURL =", data.ShortCutIconURL)
-				log.Println("I! ImageURL =", data.ImageURL)
+				logger.WithField("1-Timestamp", data.Timestamp).
+					WithField("2-VisitHost", data.VisitHost).
+					WithField("3-Creator", data.Creator).
+					WithField("4-Title", data.Title).
+					WithField("5-Description", data.Description).
+					WithField("6-URL", data.URL).
+					WithField("7-ShortCutIconURL", data.ShortCutIconURL).
+					WithField("8-ImageURL", data.ImageURL).
+					Info("Collected data")
 			}
 		} else {
-			log.Println("W! There is not any collected data")
+			logger.Warn("There is not any collected data")
 		}
 
 		wg.Done()

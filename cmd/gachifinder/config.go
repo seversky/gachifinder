@@ -3,12 +3,13 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 
 	"github.com/jessevdk/go-flags"
-	"github.com/seversky/gachifinder"
+	logger "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
+
+	"github.com/seversky/gachifinder"
 )
 
 // Options : Cli option Flags
@@ -40,7 +41,7 @@ func setOptions() (gachifinder.Config, error) {
 				os.Exit(0)
 			}
 		}
-		return config, fmt.Errorf("E! The program has been anomaly exited. Exit code = %d", 1)
+		return config, fmt.Errorf("The program has been anomaly exited. Exit code = %d", 1)
 	}
 
 	if options.ShowVersion {
@@ -58,21 +59,38 @@ func setOptions() (gachifinder.Config, error) {
 		return config, err
 	}
 
-	log.Println("I! config.Global.MaxUsedCores =", config.Global.MaxUsedCores)
-	log.Println("I! config.Global.Interval =", config.Global.Interval)
-	log.Println("I! config.Scraper.VisitDomains =", config.Scraper.VisitDomains)
-	log.Println("I! config.Scraper.AllowedDomains =", config.Scraper.AllowedDomains)
-	log.Println("I! config.Scraper.UserAgent =", config.Scraper.UserAgent)
-	log.Println("I! config.Scraper.MaxDepthToVisit =", config.Scraper.MaxDepthToVisit)
-	log.Println("I! config.Scraper.Async =", config.Scraper.Async)
-	log.Println("I! config.Scraper.Parallelism =", config.Scraper.Parallelism)
-	log.Println("I! config.Scraper.Delay =", config.Scraper.Delay)
-	log.Println("I! config.Scraper.RandomDelay =", config.Scraper.RandomDelay)
-	log.Println("I! config.Scraper.ConsumerQueueThreads =", config.Scraper.ConsumerQueueThreads)
-	log.Println("I! config.Scraper.ConsumerQueueMaxSize =", config.Scraper.ConsumerQueueMaxSize)
-	log.Println("I! config.Emitter.Elasticsearch.Hosts =", config.Emitter.Elasticsearch.Hosts)
-	log.Println("I! config.Emitter.Elasticsearch.Username =", config.Emitter.Elasticsearch.Username)
-	log.Println("I! config.Emitter.Elasticsearch.Password =", config.Emitter.Elasticsearch.Password)
+	err = setLogger(&config)
+	if err != nil {
+		return config, err
+	}
+
+	logger.WithFields(logger.Fields{
+		"config.Global.MaxUsedCores": config.Global.MaxUsedCores,
+		"config.Global.Interval": config.Global.Interval,
+		"config.Global.Log.LogLevel": config.Global.Log.LogLevel,
+		"config.Global.Log.Stdout": config.Global.Log.Stdout,
+		"config.Global.Log.Format": config.Global.Log.Format,
+		"config.Global.Log.ForceColors": config.Global.Log.ForceColors,
+		"config.Global.Log.GoTimeFormat": config.Global.Log.GoTimeFormat,
+		"config.Global.Log.LogPath": config.Global.Log.LogPath,
+		"config.Global.Log.MaxSize": config.Global.Log.MaxSize,
+		"config.Global.Log.MaxAge": config.Global.Log.MaxAge,
+		"config.Global.Log.MaxBackups": config.Global.Log.MaxBackups,
+		"config.Global.Log.Compress": config.Global.Log.Compress,
+		"config.Scraper.VisitDomains": config.Scraper.VisitDomains,
+		"config.Scraper.AllowedDomains": config.Scraper.AllowedDomains,
+		"config.Scraper.UserAgent": config.Scraper.UserAgent,
+		"config.Scraper.MaxDepthToVisit": config.Scraper.MaxDepthToVisit,
+		"config.Scraper.Async": config.Scraper.Async,
+		"config.Scraper.Parallelism": config.Scraper.Parallelism,
+		"config.Scraper.Delay": config.Scraper.Delay,
+		"config.Scraper.RandomDelay": config.Scraper.RandomDelay,
+		"config.Scraper.ConsumerQueueThreads": config.Scraper.ConsumerQueueThreads,
+		"config.Scraper.ConsumerQueueMaxSize": config.Scraper.ConsumerQueueMaxSize,
+		"config.Emitter.Elasticsearch.Hosts": config.Emitter.Elasticsearch.Hosts,
+		"config.Emitter.Elasticsearch.Username": config.Emitter.Elasticsearch.Username,
+		"config.Emitter.Elasticsearch.Password": config.Emitter.Elasticsearch.Password,
+	}).Info("Show All Configurations")
 
 	return config, nil
 }
