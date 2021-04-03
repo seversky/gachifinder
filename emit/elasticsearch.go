@@ -3,13 +3,13 @@ package emit
 import (
 	"context"
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/olivere/elastic/v7"
+	logger "github.com/sirupsen/logrus"
 
 	"github.com/seversky/gachifinder"
 )
@@ -169,7 +169,7 @@ func (e *Elasticsearch) Connect() error {
 	esVersion, err := client.ElasticsearchVersion(e.Config.Emitter.Elasticsearch.Hosts[0])
 
 	if err != nil {
-		log.Println("Elasticsearch version check failed:", err)
+		logger.Error("Elasticsearch version check failed")
 		return err
 	}
 
@@ -179,11 +179,12 @@ func (e *Elasticsearch) Connect() error {
 		return err
 	}
 	if majorReleaseNumber < 7 {
-		return fmt.Errorf("E! Elasticsearch version not supported: %s", esVersion)
+		return fmt.Errorf("Elasticsearch version not supported: %s", esVersion)
 	}
 
-	log.Println("I! Elasticsearch version: " + esVersion)
-	log.Println("I! Elasticsearch major version number:", majorReleaseNumber)
+	logger.WithField("Elasticsearch version", esVersion).
+		WithField("Elasticsearch major version number", majorReleaseNumber).
+		Info("Elasticsearch Info")
 
 	e.client = client
 	e.majorReleaseNumber = majorReleaseNumber
@@ -209,6 +210,16 @@ func (e *Elasticsearch) Write(dc <-chan gachifinder.GachiData) error {
 	wg.Add(1)
 	go func () {
 		for data := range dc {
+			logger.WithField("1-Timestamp", data.Timestamp).
+				WithField("2-VisitHost", data.VisitHost).
+				WithField("3-Creator", data.Creator).
+				WithField("4-Title", data.Title).
+				WithField("5-Description", data.Description).
+				WithField("6-URL", data.URL).
+				WithField("7-ShortCutIconURL", data.ShortCutIconURL).
+				WithField("8-ImageURL", data.ImageURL).
+				Debug("Collected data")
+
 			m := make(map[string]interface{})
 			m["@timestamp"] 	= data.Timestamp
 			m["visit_host"]		= data.VisitHost
@@ -234,40 +245,46 @@ func (e *Elasticsearch) Write(dc <-chan gachifinder.GachiData) error {
 		res, err := bulkRequest.Do(ctx)
 
 		if err != nil {
-			log.Printf("W! In %d tried, Error sending bulk request to Elasticsearch: %s\n", retry, err)
+			logger.WithField("Retry count", retry).
+				WithField("error", err).
+				Error("Elasticsearch bulk writing error")
 			continue
 		} else {
 			if res.Errors {
 				for id, err := range res.Failed() {
-					log.Printf("E! Elasticsearch indexing failure, id: %d, error: %s, caused by: %s, %s\n", id, err.Error.Reason, err.Error.CausedBy["reason"], err.Error.CausedBy["type"])
+					logger.WithField("id", id).
+						WithField("error", err.Error.Reason).
+						WithField("reason caused by", err.Error.CausedBy["reason"]).
+						WithField("type caused by", err.Error.CausedBy["type"]).
+						Error("Elasticsearch indexing failure")
 				}
-				return fmt.Errorf("E! Elasticsearch failed to index %d metrics", len(res.Failed()))
+				return fmt.Errorf("Elasticsearch failed to index %d metrics", len(res.Failed()))
 			}
 			return nil
 		}
 	}
 
-	return fmt.Errorf("E! Retry counts are exceeded")
+	return fmt.Errorf("Retry counts are exceeded")
 }
 
 func (e *Elasticsearch) manageTemplate(ctx context.Context) error {
 	templateExists, errExists := e.client.IndexTemplateExists(templateName).Do(ctx)
 	if errExists != nil {
-		return fmt.Errorf("E! Elasticsearch template check failed, template name: '%s', error: %s", templateName, errExists)
+		return fmt.Errorf("Elasticsearch template check failed, template name: '%s', error: %s", templateName, errExists)
 	}
 
 	if !templateExists {
 		_, errCreateTemplate := e.client.IndexPutTemplate(templateName).BodyString(indexTemplate).Do(ctx)
 
 		if errCreateTemplate != nil {
-			return fmt.Errorf("E! Elasticsearch failed to create index template '%s' : %s", templateName, errCreateTemplate)
+			return fmt.Errorf("Elasticsearch failed to create index template '%s' : %s", templateName, errCreateTemplate)
 		}
 		templateExists, errExists := e.client.IndexTemplateExists(templateName).Do(ctx)
 		if errExists != nil {
-			return fmt.Errorf("E! Elasticsearch template check failed, template name: '%s', error: %s", templateName, errExists)
+			return fmt.Errorf("Elasticsearch template check failed, template name: '%s', error: %s", templateName, errExists)
 		}
 		if !templateExists {
-			return fmt.Errorf("E! Failed to create the template '%s'", templateName)
+			return fmt.Errorf("Failed to create the template '%s'", templateName)
 		}
 	}
 

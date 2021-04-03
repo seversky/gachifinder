@@ -32,20 +32,20 @@ func scrapeTest(config *gachifinder.Config) {
 
 		length := len(emitData)
 		if length > 0 {
-			logger.Println("I! The number of the collected data:", length)
+			logger.WithField("The number of the collected data", length).Info("Crawling finished")
 			for _, data := range emitData {
-				logger.Println("")
-				logger.Println("I! Timestamp =", data.Timestamp)
-				logger.Println("I! VisitHost =", data.VisitHost)
-				logger.Println("I! Creator =", data.Creator)
-				logger.Println("I! Title =", data.Title)
-				logger.Println("I! Description =", data.Description)
-				logger.Println("I! URL =", data.URL)
-				logger.Println("I! ShortCutIconURL =", data.ShortCutIconURL)
-				logger.Println("I! ImageURL =", data.ImageURL)
+				logger.WithField("1-Timestamp", data.Timestamp).
+					WithField("2-VisitHost", data.VisitHost).
+					WithField("3-Creator", data.Creator).
+					WithField("4-Title", data.Title).
+					WithField("5-Description", data.Description).
+					WithField("6-URL", data.URL).
+					WithField("7-ShortCutIconURL", data.ShortCutIconURL).
+					WithField("8-ImageURL", data.ImageURL).
+					Info("Collected data")
 			}
 		} else {
-			logger.Println("W! There is not any collected data")
+			logger.Warn("There is not any collected data")
 		}
 
 		wg.Done()

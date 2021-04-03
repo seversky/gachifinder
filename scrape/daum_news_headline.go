@@ -1,9 +1,8 @@
 package scrape
 
 import (
-	"log"
-
 	"github.com/gocolly/colly/v2"
+	logger "github.com/sirupsen/logrus"
 
 	"github.com/seversky/gachifinder"
 )
@@ -58,7 +57,7 @@ func OnHTMLDaumHeadlineNews(dc chan<- gachifinder.GachiData, s *Scrape) {
 
 			dc <- emitData
 		} else {
-			log.Println("W! There is not any press name!")
+			logger.Println("W! There is not any press name!")
 		}
 	})
 }

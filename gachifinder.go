@@ -15,7 +15,7 @@ type Config struct {
 			MaxSize			int 	`yaml:"max_size"`
 			MaxAge			int 	`yaml:"max_age"`
 			MaxBackups		int 	`yaml:"max_backups"`
-			Compress		string 	`yaml:"compress"`
+			Compress		bool 	`yaml:"compress"`
 		}`yaml:"log"`
 	} `yaml:"global"`
 

@@ -41,7 +41,7 @@ func setOptions() (gachifinder.Config, error) {
 				os.Exit(0)
 			}
 		}
-		return config, fmt.Errorf("E! The program has been anomaly exited. Exit code = %d", 1)
+		return config, fmt.Errorf("The program has been anomaly exited. Exit code = %d", 1)
 	}
 
 	if options.ShowVersion {
@@ -59,7 +59,10 @@ func setOptions() (gachifinder.Config, error) {
 		return config, err
 	}
 
-	setLogger(&config)
+	err = setLogger(&config)
+	if err != nil {
+		return config, err
+	}
 
 	logger.WithFields(logger.Fields{
 		"config.Global.MaxUsedCores": config.Global.MaxUsedCores,

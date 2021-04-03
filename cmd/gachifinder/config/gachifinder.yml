@@ -3,15 +3,15 @@ global:
   interval: 5 # Crawing interval(unit: min)
 
   log:
-    log_level: debug # one of trace, debug, info, warn[ing], error, fatal, panic
+    log_level: debug # one of trace, debug, info, warn[ing], error, fatal or panic
     stdout: true
-    format: 'text' # or "json"
+    format: 'text' # one of "text" or "json"
     # go_time_format: '2006-01-02T15:04:05.999Z07:00' # default=RFC3339, refer to https://golang.org/src/time/format.go
     force_colors: true
 
     log_path: './log/gachifinder.log'
-    max_size: 1 # Max megabytes before log is rotated
-    max_age: 1 # Max number of days to retain log files
+    max_size: 50 # Max megabytes before log is rotated
+    max_age: 7 # Max number of days to retain log files
     max_backups: 3 # Max number of old log files to keep
     compress: true
 

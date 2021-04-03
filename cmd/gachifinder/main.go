@@ -17,7 +17,7 @@ func main() {
 	// Set command options and config options
 	config, err := setOptions()
 	if err != nil {
-		logger.Fatalln("E! error:", err)
+		logger.WithField("error", err).Fatalln("Option or configuration fail")
 	}
 
 	// Set used core(s)
@@ -26,16 +26,13 @@ func main() {
 	} else {
 		runtime.GOMAXPROCS(config.Global.MaxUsedCores)
 	}
-	logger.WithFields(logger.Fields{
-		"1:GO Runtime Version": runtime.Version(),
-		"2:System Arch": runtime.GOARCH,
-		"3:GachiFider version": version,
-		"4:GachiFider revision number": commit,
-		"5:Number of used CPUs": runtime.GOMAXPROCS(0),
-	}).Info("Application Initializing")
+	logger.WithField("1-GO Runtime Version", runtime.Version()).
+		WithField("2-System Arch", runtime.GOARCH).
+		WithField("3-GachiFider version", version).
+		WithField("4-GachiFider revision number", commit).
+		WithField("5-Number of used CPUs", runtime.GOMAXPROCS(0)).
+		Info("Application Initializing")
 	
-	os.Exit(0) // Jack: test
-
 	if options.ScrapeTest {
 		scrapeTest(&config)
 		os.Exit(0)
@@ -55,7 +52,7 @@ func main() {
 
 	err = em.Connect()
 	if err != nil {
-		logger.Fatalln("E! error:", err)
+		logger.WithField("error", err).Fatalln("Emitter fail")
 	}
 	defer em.Close()
 
@@ -70,16 +67,15 @@ func main() {
 
 		err = em.Write(dc)
 		if err != nil {
-			logger.Println(err)
-			logger.Println("E! Crawling is failed at", time.Now())
+			logger.WithField("error", err).Error("Crawling is failed")
 		} else {
-			logger.Println("I! Crawling is done successfully at", time.Now())
+			logger.Info("Crawling is done successfully")
 		}
 		_, tNext := js.NextRun()
-		logger.Println("I! It'll get begun at", tNext)
+		logger.WithField("Next running time", tNext).Info("Crawling time")
 	})
 	if errJs != nil {
-        logger.Fatalln("E! error:", err)
+        logger.WithField("error", err).Fatalln("Job scheduling fail")
     }
 
 	js.StartBlocking()
