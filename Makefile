@@ -7,7 +7,7 @@ LDFLAGS=-ldflags "-s -X main.version=${VERSION} -X main.commit=${COMMIT}"
 all: help windows darwin linux
 
 help:
-	@echo "make all|windows|darwin|linux"
+	@echo "Usage: make all|windows|darwin|linux"
 windows:
 	cd cmd/gachifinder && GOOS=windows GOARCH=amd64 GO111MODULE=on go build -o windows/gachifinder.exe ${LDFLAGS}
 darwin:
