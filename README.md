@@ -85,7 +85,7 @@ Help Options:
   /h, /help          Show this help message
 ```
 
-### **Yaml Configuration: gachifinder.yml**
+### **Options: gachifinder.yml**
 
 ```yaml
 global:
