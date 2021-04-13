@@ -85,6 +85,53 @@ Help Options:
   /h, /help          Show this help message
 ```
 
+### **Yaml Configuration: gachifinder.yml**
+
+```yaml
+global:
+  max_used_cores: 0 # if zero(0), all cores used.
+  interval: 5 # Crawing interval(unit: min)
+
+  log:
+    log_level: debug # one of trace, debug, info, warn[ing], error, fatal or panic
+    stdout: true
+    format: 'text' # one of "text" or "json"
+    # go_time_format: '2006-01-02T15:04:05.999Z07:00' # default=RFC3339, refer to https://golang.org/src/time/format.go
+    force_colors: true
+
+    log_path: './log/gachifinder.log'
+    max_size: 50 # Max megabytes before log is rotated
+    max_age: 7 # Max number of days to retain log files
+    max_backups: 3 # Max number of old log files to keep
+    compress: true
+
+scraper:
+  visit_domains:
+    - https://news.naver.com
+    - https://news.daum.net
+  # allowed_domains:
+  #   - https://news.naver.com
+  #   - https://news.daum.net
+  user_agent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36'
+  max_depth_to_visit: 1
+
+  async: true # Async turns on asynchronous network communication. Use Collector.Wait() to be sure all requests have been finished.
+
+  parallelism: 20 # The number of the maximum allowed concurrent requests of the matching domains.
+  delay: 1 # The duration to wait before creating a new request to the matching domains.(unit: sec)
+  random_delay: 5 # The extra randomized duration to wait added to delay before creating a new request.(unit: sec)
+
+  consumer_queue_threads: 2 # The number of consumer queue threads
+  consumer_queue_max_size: 10 # Max size of consumer queue
+
+emitter:
+  elasticsearch:
+    hosts:
+      - http://elasticsearch:9200
+    username: elastic
+    password: changeme
+```
+
 ## Using Docker with Elasticsearch and Kibana for a test environment on Linux.
 
 _I suppose to be already installed Docker and Docker-compose therefore I don't handle installing those here._
