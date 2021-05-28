@@ -29,6 +29,9 @@ This is an extendable output module via [Emitter](https://github.com/seversky/ga
 
 [elasticsearch](https://github.com/seversky/gachifinder/blob/master/emit/elasticsearch.go)
 
+## Demo
+[DEMO Site](http://gpanda.iptime.org/) (ID/PW: guest/Guest20@!)
+
 ## How to build
 
 ### **Preparing dependencies**
