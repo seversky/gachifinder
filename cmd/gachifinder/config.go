@@ -14,9 +14,8 @@ import (
 
 // Options : Cli option Flags
 type Options struct {
-	Daemon bool `short:"d" long:"daemon" description:"To run it daemon mode, but not supported yet!"`
 	ConfigPath flags.Filename `short:"c" long:"config_path" default:"../config/gachifinder.yml" env:"CONFIG_PATH" description:"Path To configure"`
-	ScrapeTest bool `short:"t" long:"test" description:"To test for crawling via a scraper only\n(Without an emitter module)\nNOTE: Cannot Run with '-d'(daemon)"`
+	ScrapeTest bool `short:"t" long:"test" description:"To test for crawling via a scraper only\n(Without an emitter module)"`
 	ShowVersion bool   `short:"v" long:"version" description:"Show GachiFinder version and git revision id"`
 }
 

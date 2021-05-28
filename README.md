@@ -29,12 +29,6 @@ This is an extendable output module via [Emitter](https://github.com/seversky/ga
 
 [elasticsearch](https://github.com/seversky/gachifinder/blob/master/emit/elasticsearch.go)
 
-## However, this is still a prototype!
-
-### To-do list before a release version.
-
-- Application daemonize.
-
 ## How to build
 
 ### **Preparing dependencies**
@@ -46,18 +40,20 @@ This is an extendable output module via [Emitter](https://github.com/seversky/ga
 
 ### **Run from the source code**
 
+#### Tested Support OS : Linux, MacOSX(darwin), Windows
+
 ```bash
 # If you're on Windows, run "Git Bash" and type the followings.
 
-$ go get github.com/seversky/gachifinder
-$ cd $GOPATH/src/github.com/seversky/gachifinder
+$ git clone https://github.com/seversky/gachifinder.git
+$ cd gachifinder
 $ make all # or one of "windows", "darwin" and "linux".
 ```
 
 If well done, you can see the binary.
 
 ```bash
-$ cd cmd/gachifinder/windows
+$ cd $GACHIFINDER_FOLDER/cmd/gachifinder/windows
 $ ls
 gachifinder.exe
 ```
@@ -72,12 +68,10 @@ Usage:
 Options for GachiFinder
 
 Application Options:
-  /d, /daemon        To run it daemon mode, but not supported yet!
   /c, /config_path:  Path To configure (default: ../config/gachifinder.yml)
                      [%CONFIG_PATH%]
   /t, /test          To test for crawling via a scraper only
                      (Without an emitter module)
-                     NOTE: Cannot Run with '-d'(daemon)
   /v, /version       Show GachiFinder version and git revision id
 
 Help Options:
@@ -132,6 +126,28 @@ emitter:
     password: changeme
 ```
 
+### **Simple test for scraping**
+
+```bash
+# Go into the folder where the built binary of gachifinder is.
+$ cd $GACHIFINDER_FOLDER/cmd/gachifinder/windows
+$ ./gachifinder.exe -t
+INFO[2021-05-28T15:13:41+09:00] Show All Configurations                       config.Emitter.Elasticsearch.Hosts="[http://elasticsearch:9200]" config.Emitter.Elasticsearch.Password=changem
+e config.Emitter.Elasticsearch.Username=elastic config.Global.Interval=5 config.Global.Log.Compress=true config.Global.Log.ForceColors=true config.Global.Log.Format=text
+config.Global.Log.GoTimeFormat= config.Global.Log.LogLevel=debug config.Global.Log.LogPath=./log/gachifinder.log config.Global.Log.MaxAge=7 config.Global.Log.MaxBackups=3
+ config.Global.Log.MaxSize=50 config.Global.Log.Stdout=true config.Global.MaxUsedCores=0 config.Scraper.AllowedDomains="[]" config.Scraper.Async=true config.Scraper.
+ConsumerQueueMaxSize=10 config.Scraper.ConsumerQueueThreads=2 config.Scraper.Delay=1 config.Scraper.MaxDepthToVisit=1 config.Scraper.Parallelism=20 config.Scraper.RandomD
+elay=5 config.Scraper.UserAgent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36" config.Scraper.VisitDomains="[https://news.n
+aver.com https://news.daum.net]"
+INFO[2021-05-28T15:13:41+09:00] Application Initializing                      1-GO Runtime Version=go1.16.3 2-System Arch=amd64 3-GachiFider version=0.1.0 4-GachiFider revisi
+on number=c44ad459 5-Number of used CPUs=8
+INFO[2021-05-28T14:56:34+09:00] Begin crawling
+INFO[2021-05-28T14:56:34+09:00] visiting https://news.daum.net
+INFO[2021-05-28T14:56:34+09:00] visiting https://news.naver.com
+...
+(omit)
+```
+
 ## Using Docker with Elasticsearch and Kibana for a test environment on Linux.
 
 _I suppose to be already installed Docker and Docker-compose therefore I don't handle installing those here._
@@ -139,7 +155,7 @@ _I suppose to be already installed Docker and Docker-compose therefore�
 To run Elasticsearch and Kibana, just go ahead below.
 
 ```bash
-$ cd $GOPATH/src/github.com/seversky/gachifinder/docker
+$ cd $GACHIFINDER_FOLDER/docker
 $ docker-compose up -d --build
 ```
 

@@ -9,15 +9,14 @@
       "type": "go",
       "request": "launch",
       "mode": "debug",
-      "buildFlags": "-ldflags='-X main.version=0.0.6'",
+      "buildFlags": "-ldflags='-X main.version=0.1.0'",
       "program": "${workspaceFolder}/cmd/gachifinder",
       "output": "windows/gachifinder_debug.exe",
       "env": {},
       "args": [
         // "-h",
         // "-v",
-        // "-t",
-        // "-d",
+        "-t",
         "-c=${workspaceFolder}\\cmd\\gachifinder\\config\\gachifinder.yml" // "\\" for Windows path
       ],
       "showLog": true

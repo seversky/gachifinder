@@ -1,4 +1,4 @@
-VERSION = 0.0.6
+VERSION = 0.1.0
 COMMIT ?= $(shell git rev-parse --short=8 HEAD)
 
 unexport LDFLAGS
